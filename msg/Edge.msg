@@ -1,5 +1,5 @@
-Node from
-Node to
+Node u
+Node v
 uint8 ACTION_DRIVE=1
 uint8 ACTION_OPEN_DOOR=2
 uint8 ACTION_PUSH_OBJECT=3

@@ -1,2 +1,2 @@
-string object
+string entity
 string area
