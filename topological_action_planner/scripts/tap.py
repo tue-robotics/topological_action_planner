@@ -30,10 +30,14 @@ class TopologicalActionPlanner:
     def _srv_plan_cb(self, req):
         # type: (PlanRequest) -> PlanResponse
 
+        u, v = (req.origin.entity, req.origin.area), (req.destination.entity, req.destination.area)
+        rospy.loginfo("Requesting topological action plan from {} to {}".format(u, v))
+
         try:
             path = nx.shortest_path(self.G,
                                     (req.origin.entity, req.origin.area),
-                                    (req.destination.entity, req.destination.area))
+                                    (req.destination.entity, req.destination.area),
+                                    weight='weight')
 
             edges = []
             for u, v in zip(path, path[1:]):
@@ -43,6 +47,7 @@ class TopologicalActionPlanner:
                                action_type=self.G[u][v]['action_type'])]
             # TODO: for the drive edges, query the maybe now updated cost of driving that with current knowledge
 
+            rospy.loginfo("Found plan of {} edges".format(len(edges)))
             return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
         except nx.NetworkXNoPath as no_path_found_ex:
             rospy.logerr(no_path_found_ex)
