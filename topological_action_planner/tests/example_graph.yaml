@@ -1,0 +1,112 @@
+- action_type: '"DRIVE"'
+  cost: 0.7395131634187393
+  destination:
+    area: r
+    entity: '7'
+  origin:
+    area: w
+    entity: '4'
+- action_type: '"DRIVE"'
+  cost: 0.3602175617681588
+  destination:
+    area: a
+    entity: '9'
+  origin:
+    area: w
+    entity: '4'
+- action_type: "OPEN_DOOR"
+  cost: 0.6220896061264187
+  destination:
+    area: l
+    entity: '8'
+  origin:
+    area: w
+    entity: '4'
+- action_type: '"DRIVE"'
+  cost: 0.5282817317665631
+  destination:
+    area: m
+    entity: '9'
+  origin:
+    area: w
+    entity: '4'
+- action_type: '"DRIVE"'
+  cost: 0.5957417973892349
+  destination:
+    area: m
+    entity: '9'
+  origin:
+    area: r
+    entity: '7'
+- action_type: '"DRIVE"'
+  cost: 0.5479946187524563
+  destination:
+    area: l
+    entity: '8'
+  origin:
+    area: r
+    entity: '7'
+- action_type: '"DRIVE"'
+  cost: 0.9900209494481325
+  destination:
+    area: v
+    entity: '3'
+  origin:
+    area: r
+    entity: '7'
+- action_type: '"DRIVE"'
+  cost: 0.7076945025239858
+  destination:
+    area: v
+    entity: '3'
+  origin:
+    area: o
+    entity: '6'
+- action_type: '"DRIVE"'
+  cost: 0.12787152838950389
+  destination:
+    area: l
+    entity: '8'
+  origin:
+    area: o
+    entity: '6'
+- action_type: ="OPEN_DOOR"
+  cost: 0.3654026003517945
+  destination:
+    area: a
+    entity: '9'
+  origin:
+    area: o
+    entity: '6'
+- action_type: ="OPEN_DOOR"
+  cost: 0.9588812408593039
+  destination:
+    area: w
+    entity: '8'
+  origin:
+    area: v
+    entity: '3'
+- action_type: ="OPEN_DOOR"
+  cost: 0.3839476311168901
+  destination:
+    area: t
+    entity: '4'
+  origin:
+    area: l
+    entity: '8'
+- action_type: ="OPEN_DOOR"
+  cost: 0.9334018027871465
+  destination:
+    area: a
+    entity: '9'
+  origin:
+    area: m
+    entity: '9'
+- action_type: '"DRIVE"'
+  cost: 0.5199605554511534
+  destination:
+    area: t
+    entity: '4'
+  origin:
+    area: w
+    entity: '8'
