@@ -15,7 +15,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>topological_action_planner_msgs</depend>
-  <depend>visualisation_msgs</depend>
+  <depend>visualization_msgs</depend>
 
   <exec_depend>rospy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-networkx</exec_depend>

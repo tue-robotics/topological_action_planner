@@ -5,7 +5,7 @@ import networkx as nx
 from topological_action_planner_msgs.msg import Edge, Node
 from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
-from visualisation_msgs.msg import MarkerArray
+from visualization_msgs.msg import MarkerArray
 
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
