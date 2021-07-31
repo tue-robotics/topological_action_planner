@@ -18,7 +18,7 @@ class TopologicalActionPlanner:
         self.plot = rospy.get_param('~plot', False)
 
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
-        self._srv_update_edge = rospy.Service('~update_edge', Plan, self._srv_update_edge_cb)
+        self._srv_update_edge = rospy.Service('~update_edge', UpdateEdge, self._srv_update_edge_cb)
         self._pub_grasp_marker = rospy.Publisher('~graph', MarkerArray, queue_size=10)
 
         # self.G = generate_dummy_graph()
@@ -51,9 +51,18 @@ class TopologicalActionPlanner:
             rospy.logerr(node_not_found_ex)
             return PlanResponse(error_msg=str(node_not_found_ex), error_code=PlanResponse.ERROR_UNKNOWN_NODE)
 
-    def _srv_update_edge_cb(self):
-        # type: (UpdateEdgeRequest) -> UpdateEdgeResponse
-        pass
+    def _srv_update_edge_cb(self, req: UpdateEdgeRequest) -> UpdateEdgeResponse:
+        try:
+            self.update_edge(req.updated)
+            return UpdateEdgeResponse(success=True)
+        except nx.NodeNotFound as node_not_found_ex:
+            rospy.logerr(node_not_found_ex)
+            return UpdateEdgeResponse(success=False)
+
+    def update_edge(self, edge: Edge):
+        u, v = (edge.origin.entity, edge.origin.area), (edge.destination.entity, edge.destination.area)
+        self.G[u][v]['weight'] = edge.cost
+        self.G[u][v]['action_type'] = edge.action_type
 
 
 if __name__ == "__main__":
