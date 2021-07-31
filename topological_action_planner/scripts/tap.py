@@ -1,13 +1,6 @@
 #! /usr/bin/env python
-import os
-
-import yaml
-
 import rospy
-import genpy
 import networkx as nx
-
-from typing import List, Mapping
 
 from topological_action_planner_msgs.msg import Edge, Node
 from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
