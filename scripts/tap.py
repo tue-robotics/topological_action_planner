@@ -15,8 +15,8 @@ class TopologicalActionPlanner:
     def __init__(self):
         self.G = nx.Graph()
 
-        self._srv_plan = rospy.Service('get_plan', Plan, self._srv_plan_cb)
-        self._srv_update_edge = rospy.Service('update_edge', Plan, self._srv_update_edge_cb)
+        self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
+        self._srv_update_edge = rospy.Service('~update_edge', Plan, self._srv_update_edge_cb)
 
         nodes = []  # Or get all from ED?
         edge_dicts = rospy.get_param('edges', [])  # type: List[Mapping]
