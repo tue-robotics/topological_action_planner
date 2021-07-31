@@ -35,10 +35,10 @@ class TopologicalActionPlanner:
         #                         (req.origin.entity, req.origin.area),
         #                         (req.destination.entity, req.destination.area))
 
-        a = Node('table', 'in_front_of')
+        a = Node(req.origin.entity, req.origin.area)
         b = Node('inner_door', 'in_front_of')
         c = Node('inner_door', 'in_back_of')
-        d = Node('kitchen', 'in_front_of')
+        d = Node(req.destination.entity, req.destination.area)
         edge_ab = Edge(u=a, v=b, cost=1, action_type=Edge.ACTION_DRIVE)
         edge_bc = Edge(u=b, v=c, cost=10, action_type=Edge.ACTION_OPEN_DOOR)
         edge_cd = Edge(u=c, v=d, cost=1, action_type=Edge.ACTION_DRIVE)
