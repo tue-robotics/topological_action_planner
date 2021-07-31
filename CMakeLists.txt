@@ -2,13 +2,12 @@ cmake_minimum_required(VERSION 3.0.2)
 project(topological_action_planner)
 
 find_package(catkin REQUIRED
-    COMPONENTS
-        rospy
-        std_msgs
-        message_generation
+  COMPONENTS
+  rospy
+  message_generation
 )
 
-# catkin_python_setup()
+catkin_python_setup()
 
 add_message_files(
   FILES
@@ -24,10 +23,14 @@ add_service_files(
 
 generate_messages(
   DEPENDENCIES
-  std_msgs
 )
 
-catkin_package()
+catkin_package(
+  INCLUDE_DIRS
+  LIBRARIES
+  CATKIN_DEPENDS message_runtime
+  DEPENDS
+)
 
 catkin_install_python(PROGRAMS
   scripts/tap.py
