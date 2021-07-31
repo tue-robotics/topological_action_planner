@@ -1,11 +1,34 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(topological_action_planner)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+    COMPONENTS
+        rospy
+        std_msgs
+        message_generation
+    CATKIN_DEPENDS
+        message_runtime
+)
 
 catkin_python_setup()
 
 catkin_package()
+
+add_message_files(
+  FILES
+  EdgeTraversal.msg
+  Node.msg
+)
+
+add_service_files(
+  FILES
+  Plan.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 # catkin_install_python(PROGRAMS
 #   scripts/my_python_script

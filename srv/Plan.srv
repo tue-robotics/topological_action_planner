@@ -1,0 +1,5 @@
+Node origin
+Node destination
+---
+bool success
+EdgeTraversal[] edges
