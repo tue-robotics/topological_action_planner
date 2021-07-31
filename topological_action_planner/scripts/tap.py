@@ -29,7 +29,7 @@ class TopologicalActionPlanner:
         visualize(self.G)
 
     def _srv_plan_cb(self, req):
-        # type: (PlanRequest) -> PlanRespons
+        # type: (PlanRequest) -> PlanResponse
 
         try:
             path = nx.shortest_path(self.G,
