@@ -6,9 +6,9 @@ import networkx as nx
 
 from typing import List, Mapping
 
-from topological_action_planner.msg import Edge, Node
-from topological_action_planner.srv import Plan, PlanRequest, PlanResponse
-from topological_action_planner.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
+from topological_action_planner_msgs.msg import Edge, Node
+from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
+from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 
 
 class TopologicalActionPlanner:

@@ -1,14 +1,20 @@
 <?xml version="1.0"?>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>topological_action_planner</name>
-  <version>0.0.0</version>
+  <version>0.0.1</version>
   <description>Plannng over a topological navigation mesh. Nodes are areas of interest in an ED world model and edges between these areas are labeled with the action to take to traverse the edge, like opening a door or plain driving. </description>
 
   <maintainer email="loy.vanbeek@gmail.com">Loy van Beek</maintainer>
   <author email="loy.vanbeek@gmail.com">Loy van Beek</author>
 
   <license>BSD</license>
+
   <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>topological_action_planner_msgs</depend>
 
   <exec_depend>rospy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-networkx</exec_depend>

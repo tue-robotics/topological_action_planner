@@ -4,31 +4,14 @@ project(topological_action_planner)
 find_package(catkin REQUIRED
   COMPONENTS
   rospy
-  message_generation
 )
 
 catkin_python_setup()
 
-add_message_files(
-  FILES
-  Edge.msg
-  Node.msg
-)
-
-add_service_files(
-  FILES
-  Plan.srv
-  UpdateEdge.srv
-)
-
-generate_messages(
-  DEPENDENCIES
-)
-
 catkin_package(
   INCLUDE_DIRS
   LIBRARIES
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS
   DEPENDS
 )
 
