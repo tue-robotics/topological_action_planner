@@ -15,6 +15,7 @@ from topological_action_planner.visualisation import create_tap_marker_array
 class TopologicalActionPlanner:
     def __init__(self):
         self.G = from_dicts(rospy.get_param('~edges'))
+        self.plot = rospy.get_param('~plot', False)
 
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service('~update_edge', Plan, self._srv_update_edge_cb)
@@ -22,7 +23,8 @@ class TopologicalActionPlanner:
 
         # self.G = generate_dummy_graph()
         # to_yaml(self.G, '/tmp/graph.yaml')
-        visualize(self.G)
+        if self.plot:
+            visualize(self.G)
         self._pub_grasp_marker.publish(create_tap_marker_array(self.G))
 
     def _srv_plan_cb(self, req):
