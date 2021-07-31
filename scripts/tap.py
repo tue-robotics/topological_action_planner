@@ -47,16 +47,15 @@ class TopologicalActionPlanner:
                                action_type=self.G[u][v]['action'])]
             # TODO: for the drive edges, query the maybe now updated cost of driving that with current knowledge
 
-            return PlanResponse(success=True, edges=edges)
+            return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
         except nx.NetworkXNoPath as no_path_found_ex:
             rospy.logerr(no_path_found_ex)
-            return PlanResponse(success=False)
+            return PlanResponse(error_msg=str(no_path_found_ex), error_code=PlanResponse.NO_PATH_FOUND)
         except nx.NodeNotFound as node_not_found_ex:
             rospy.logerr(node_not_found_ex)
-            return PlanResponse(success=False)
+            return PlanResponse(error_msg=str(node_not_found_ex), error_code=PlanResponse.ERROR_UNKNOWN_NODE)
 
     # TODO:
-    # error bool -> error code
     # action types as strings
 
     def _srv_update_edge_cb(self):
