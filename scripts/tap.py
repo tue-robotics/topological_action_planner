@@ -24,8 +24,8 @@ class TopologicalActionPlanner:
         #     edge = Edge()
         #     genpy.message.fill_message_args(edge, [edge_dict])  # Convert structure in nested dict to ROS msg
         #
-        #     self.G.add_edge((edge.u.entity, edge.u.area),
-        #                     (edge.v.entity, edge.v.area),
+        #     self.G.add_edge((edge.origin.entity, edge.origin.area),
+        #                     (edge.destination.entity, edge.destination.area),
         #                     weight=edge.cost,
         #                     action=edge.action)
 
@@ -41,8 +41,8 @@ class TopologicalActionPlanner:
 
             edges = []
             for u, v in zip(path, path[1:]):
-                edges += [Edge(u=Node(*u),
-                               v=Node(*v),
+                edges += [Edge(origin=Node(*u),
+                               destination=Node(*v),
                                cost=self.G[u][v]['weight'],
                                action_type=self.G[u][v]['action'])]
             # TODO: for the drive edges, query the maybe now updated cost of driving that with current knowledge
@@ -55,7 +55,7 @@ class TopologicalActionPlanner:
             rospy.logerr(node_not_found_ex)
             return PlanResponse(success=False)
 
-    # TODO: rename u,v to src, dst
+    # TODO:
     # error bool -> error code
     # action types as strings
 
