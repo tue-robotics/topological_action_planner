@@ -50,13 +50,10 @@ class TopologicalActionPlanner:
             return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
         except nx.NetworkXNoPath as no_path_found_ex:
             rospy.logerr(no_path_found_ex)
-            return PlanResponse(error_msg=str(no_path_found_ex), error_code=PlanResponse.NO_PATH_FOUND)
+            return PlanResponse(error_msg=str(no_path_found_ex), error_code=PlanResponse.ERROR_NO_PATH_FOUND)
         except nx.NodeNotFound as node_not_found_ex:
             rospy.logerr(node_not_found_ex)
             return PlanResponse(error_msg=str(node_not_found_ex), error_code=PlanResponse.ERROR_UNKNOWN_NODE)
-
-    # TODO:
-    # action types as strings
 
     def _srv_update_edge_cb(self):
         # type: (UpdateEdgeRequest) -> UpdateEdgeResponse

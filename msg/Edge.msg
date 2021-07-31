@@ -1,8 +1,8 @@
 Node origin
 Node destination
-uint8 ACTION_DRIVE=1
-uint8 ACTION_OPEN_DOOR=2
-uint8 ACTION_PUSH_OBJECT=3
-#uint8 USE_ELEVATOR=4
-uint8 action_type  # Any of ACTION_*
+string ACTION_DRIVE="DRIVE"
+string ACTION_OPEN_DOOR=="OPEN_DOOR"
+string ACTION_PUSH_OBJECT="PUSH_OBJECT"
+#string ACTION_USE_ELEVATOR="USE_ELEVATOR"
+string action_type  # Any of ACTION_*
 float32 cost  # How expensive is is to travel along this edge
