@@ -12,7 +12,7 @@ find_package(catkin REQUIRED
 
 add_message_files(
   FILES
-  EdgeTraversal.msg
+  Edge.msg
   Node.msg
 )
 
