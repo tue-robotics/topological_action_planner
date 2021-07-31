@@ -3,7 +3,7 @@ from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import Point
 
 
-def create_tap_marker_array(graph, ed,  frame="map"):
+def create_tap_marker_array(graph, ed, frame="map"):
     def get_entity_pos(entity, area):
         ent = ed.get_entity(entity)
         return ent.volumes[area].center_point
