@@ -110,3 +110,27 @@
   origin:
     area: w
     entity: '8'
+- action_type: DRIVE
+  cost: 0.7395131634187393
+  destination:
+    area: 'in_front_of'
+    entity: 'couch'
+  origin:
+    area: 'in_front_of'
+    entity: 'cabinet'
+- action_type: DRIVE
+  cost: 0.7395131634187393
+  destination:
+    area: 'in_front_of'
+    entity: 'couch'
+  origin:
+    area: 'in_front_of'
+    entity: 'bar'
+- action_type: DRIVE
+  cost: 0.7395131634187393
+  destination:
+    area: 'in_front_of'
+    entity: 'cabinet'
+  origin:
+    area: 'in_front_of'
+    entity: 'bar'
