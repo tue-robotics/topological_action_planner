@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>topological_action_planner</name>
   <version>0.0.0</version>
   <description>Plannng over a topological navigation mesh. Nodes are areas of interest in an ED world model and edges between these areas are labeled with the action to take to traverse the edge, like opening a door or plain driving. </description>

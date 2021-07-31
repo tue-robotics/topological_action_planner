@@ -6,13 +6,9 @@ find_package(catkin REQUIRED
         rospy
         std_msgs
         message_generation
-    CATKIN_DEPENDS
-        message_runtime
 )
 
-catkin_python_setup()
-
-catkin_package()
+# catkin_python_setup()
 
 add_message_files(
   FILES
@@ -29,6 +25,8 @@ generate_messages(
   DEPENDENCIES
   std_msgs
 )
+
+catkin_package()
 
 # catkin_install_python(PROGRAMS
 #   scripts/my_python_script
