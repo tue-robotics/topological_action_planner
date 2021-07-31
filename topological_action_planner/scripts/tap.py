@@ -14,6 +14,7 @@ from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 
 from topological_action_planner.serialisation import from_dicts
+from topological_action_planner.util import visualize, generate_dummy_graph
 
 
 class TopologicalActionPlanner:
@@ -23,14 +24,9 @@ class TopologicalActionPlanner:
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service('~update_edge', Plan, self._srv_update_edge_cb)
 
-        # self.__generate_dummy_graph()
+        # self.G = generate_dummy_graph()
         # to_yaml(self.G, '/tmp/graph.yaml')
-
-        import matplotlib.pyplot as plt
-        nx.draw(self.G, with_labels=True)
-        plt.ion()
-        plt.show()
-        plt.pause(0.001)
+        visualize(self.G)
 
     def _srv_plan_cb(self, req):
         # type: (PlanRequest) -> PlanRespons
@@ -59,26 +55,6 @@ class TopologicalActionPlanner:
     def _srv_update_edge_cb(self):
         # type: (UpdateEdgeRequest) -> UpdateEdgeResponse
         pass
-
-    def __generate_dummy_graph(self, n_nodes=10, n_edges=20):
-        numbers = '0123456789'
-        letters = 'abcdefghijklmnopqrstuvwxyz'
-        import random
-        random.seed(123456789)
-        # Make a bunch of nodes with randomly picked names from numbers and letters
-        nodes = [(random.choice(numbers), random.choice(letters)) for _ in range(n_nodes)]
-
-        for _ in range(n_edges):
-            a, b = random.choice(nodes), random.choice(nodes)
-            if a == b:
-                continue
-            self.G.add_edge(a,
-                            b,
-                            weight=random.random(),
-                            # 60% chance of driving, 30% doors, 10% pushing:
-                            action_type=random.choice([Edge.ACTION_DRIVE]*6 +
-                                                      [Edge.ACTION_OPEN_DOOR]*3 +
-                                                      [Edge.ACTION_DRIVE]))
 
 
 if __name__ == "__main__":
