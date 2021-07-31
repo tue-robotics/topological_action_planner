@@ -1,2 +1,0 @@
-string entity
-string area
