@@ -1,5 +1,8 @@
 # !/usr/bin/env python
 # license removed for brevity
+
+#TODO after the visualisation is tested this file can be removed
+
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import Point
@@ -20,8 +23,6 @@ def pub_marker():
             mark.scale.x = 0.5
             mark.scale.y = 0.5
             mark.color.r = 1
-            mark.color.g = 0
-            mark.color.b = 0
             mark.color.a = 1
             mark.pose.position.x = i
             mark.pose.position.y = i
