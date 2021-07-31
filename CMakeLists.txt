@@ -19,6 +19,7 @@ add_message_files(
 add_service_files(
   FILES
   Plan.srv
+  UpdateEdge.srv
 )
 
 generate_messages(
@@ -28,10 +29,10 @@ generate_messages(
 
 catkin_package()
 
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/tap.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_topological_action_planner.cpp)
