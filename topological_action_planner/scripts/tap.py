@@ -88,16 +88,19 @@ class TopologicalActionPlanner:
 
                         edge_cost = len(global_plan.plan) * COST_PER_POSE
 
+                        rospy.loginfo("Updating cost of edge {} - {} = {}"
+                                      .format(edge.origin, edge.destination, edge_cost))
                         graph.edges[edge.origin][edge.destination] = edge_cost
                         edge.cost = edge_cost
 
                 current_total_cost = sum([edge.cost for edge in edges])
                 if lowest_total_cost == current_total_cost:
+                    rospy.loginfo('The current plan has the lowest cost ({}), picking this'.format(current_total_cost))
                     break  # The cost is not changing anymore, we hit the optimum, use this path
-                else:
-                    lowest_total_cost = current_total_cost \
-                        if current_total_cost < lowest_total_cost \
-                        else lowest_total_cost
+                elif current_total_cost < lowest_total_cost:
+                    rospy.loginfo('The current plan has cost {}, lowest is {}. '
+                                  'Trying a to find a better plan'.format(current_total_cost, lowest_total_cost))
+                    lowest_total_cost = current_total_cost
 
             rospy.loginfo("Found plan of {} edges".format(len(edges)))
             return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
