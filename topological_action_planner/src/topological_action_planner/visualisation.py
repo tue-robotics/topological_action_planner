@@ -1,8 +1,10 @@
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
+from ed_py.world_model import WM
+from geometry_msgs.msg import Point
 
 
-def create_tap_marker_array(graph, ed, frame="map"):
+def create_tap_marker_array(graph, wm: WM, frame="map"):
     marker_array = MarkerArray()
     stamp = rospy.Time.now()
 
@@ -18,7 +20,7 @@ def create_tap_marker_array(graph, ed, frame="map"):
         n_mark.scale.z = 0.1
         n_mark.color.a = 1
         n_mark.color.r = 1
-        n_mark.pose = ed.get_center_pose(entity, area).pose
+        n_mark.pose = wm.get_entity(entity).volumes[area].center_point
         marker_array.markers.append(n_mark)
 
     for j, (origin, destination) in enumerate(graph.edges.keys()):
@@ -34,8 +36,11 @@ def create_tap_marker_array(graph, ed, frame="map"):
         e_mark.color.b = 1
         e_mark.color.a = 1
         e_mark.pose.orientation.w = 1  # To squelch annoying messages about uninitialized quats
-        e_mark.points = [ed.get_center_pose(origin[0], origin[1]).pose.position,
-                         ed.get_center_pose(destination[0], destination[1]).pose.position]
+
+        vec1 = wm.get_entity(origin[0]).volumes[origin[1]].center_point,
+        vec2 = wm.get_entity(destination[0]).volumes[destination[1]].center_point
+        e_mark.points = [Point(vec1.x, vec1.y, vec1.z),
+                         Point(vec2.x, vec2.y, vec2.z)]
         marker_array.markers.append(e_mark)
 
     return marker_array

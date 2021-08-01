@@ -10,13 +10,18 @@ from topological_action_planner_msgs.msg import Edge, Node
 from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 from visualization_msgs.msg import MarkerArray
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
+from std_msgs.msg import Header
 
+from ed_py.utility import rooms_of_volume  # TODO: Rename to ed_python for consistency sake
+from ed_py.world_model import WM
 from topological_action_planner.ed_interface import EdInterface
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
 from cb_base_navigation_msgs.srv import GetPlan, GetPlanRequest, GetPlanResponse
+from ed_navigation_msgs.srv import GetGoalConstraint
+from cb_base_navigation_msgs.msg import PositionConstraint
 
 
 def compute_path_length(path: List[PoseStamped]) -> float:
@@ -36,7 +41,9 @@ class TopologicalActionPlanner:
                                                                Edge.ACTION_OPEN_DOOR: 5,  # per door opened
                                                                Edge.ACTION_PUSH_OBJECT: 10})  # per item pushed
 
-        self.ed = EdInterface('hero', None)
+        self.wm = WM()
+
+        self._get_constraint_srv = rospy.ServiceProxy('/ed/navigation/get_constraint', GetGoalConstraint)
 
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service('~update_edge', UpdateEdge, self._srv_update_edge_cb)
@@ -48,7 +55,7 @@ class TopologicalActionPlanner:
         self._global_planner = rospy.ServiceProxy('global_planner/get_plan_srv', GetPlan)
         if self.plot:
             visualize(self.G)
-        self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self.ed))
+        self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self.wm))
 
     def _srv_plan_cb(self, req):
         # type: (PlanRequest) -> PlanResponse
@@ -56,7 +63,7 @@ class TopologicalActionPlanner:
         graph = copy.deepcopy(self.G)  # type: nx.Graph
 
         for node in graph.nodes.keys():
-            graph.nodes[node]['room'] = self.ed.get_room(*node)  # Based on where they are in ED?
+            graph.nodes[node]['room'] = rooms_of_volume(self.wm, *node)  # Based on where they are in ED?
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
@@ -65,7 +72,7 @@ class TopologicalActionPlanner:
             origin_node = 'robot', ''
 
             # Ask ED in which room the robot is currently, maybe based on it's pose
-            current_room = self.ed.get_room(*origin_node)
+            current_room = rooms_of_volume(self.wm, *origin_node)
 
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
@@ -99,8 +106,12 @@ class TopologicalActionPlanner:
                     if edge.action_type == Edge.ACTION_DRIVE:
                         # TODO: we should actually plan from the end of the plan found for the previous edge.
                         # Otherwise the center pose could be blocked but not e whole area and we would still fail.
-                        src = self.ed.get_center_pose(edge.origin.entity, edge.origin.area)
-                        dst = self.ed.get_area_constraint(edge.destination.entity, edge.destination.area)
+                        breakpoint()
+                        src_vector = self.wm.get_entity(edge.origin.entity).volumes[edge.origin.area].center_point
+                        src = PoseStamped(header=Header(frame_id='map'),
+                                          pose=Pose(position=Point(src_vector.x, src_vector.y, 0),
+                                                    orientation=Quaternion(0, 0, 0, 1)))
+                        dst = self.wm.get_area_constraint(edge.destination.entity, edge.destination.area)
                         global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
 
                         if global_plan_res.succes:
@@ -126,7 +137,7 @@ class TopologicalActionPlanner:
                                   'Trying a to find a better plan with updated edge costs'.format(current_total_cost, lowest_total_cost))
                     lowest_total_cost = current_total_cost
 
-            self._pub_grasp_marker.publish(create_tap_marker_array(graph, self.ed))
+            self._pub_grasp_marker.publish(create_tap_marker_array(graph, self.wm))
             rospy.loginfo("Found plan of {} edges".format(len(edges)))
             return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
         except nx.NetworkXNoPath as no_path_found_ex:
@@ -149,6 +160,14 @@ class TopologicalActionPlanner:
         self.G[u][v]['weight'] = edge.cost
         self.G[u][v]['action_type'] = edge.action_type
 
+    def get_area_constraint(self, entity: str, area: str) -> str:
+        """What is the center pose of an entity and area?"""
+        res = self._get_constraint_srv(entity_ids=[entity],
+                                       area_names=[area])
+        if not res.error_msg:
+            return PositionConstraint(constraint=res.position_constraint_map_frame, frame="map")
+        else:
+            raise Exception("Cannot get a constraint for {}.{}".format(entity, area))
 
 if __name__ == "__main__":
     rospy.init_node("topological_action_planner")
