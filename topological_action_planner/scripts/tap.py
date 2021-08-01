@@ -13,7 +13,7 @@ from topological_action_planner.ed_interface import EdInterface
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
-from cb_base_navigation_msgs.srv import GetPlan
+from cb_base_navigation_msgs.srv import GetPlan, GetPlanRequest, GetPlanResponse
 
 
 class TopologicalActionPlanner:
@@ -33,7 +33,7 @@ class TopologicalActionPlanner:
         # self.G = generate_dummy_graph()
         # to_yaml(self.G, '/tmp/graph.yaml')
 
-        self._global_planner = rospy.ServiceProxy('/global_planner/get_plan_srv', GetPlan)
+        self._global_planner = rospy.ServiceProxy('global_planner/get_plan_srv', GetPlan)
         if self.plot:
             visualize(self.G)
         self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self.ed))
@@ -85,13 +85,19 @@ class TopologicalActionPlanner:
                 # For the drive edges, query the maybe now updated cost of driving that with current knowledge
                 for edge in edges:
                     if edge.action_type == Edge.ACTION_DRIVE:
+                        # TODO: we should actually plan from the end of the plan found for the previous edge.
+                        # Otherwise the center pose could be blocked but not e whole area and we would still fail.
                         src = self.ed.get_center_pose(edge.origin.entity, edge.origin.area)
                         dst = self.ed.get_area_constraint(edge.destination.entity, edge.destination.area)
-                        # global_plan = self._global_planner(src, dst)
+                        global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
 
-                        # TODO: get proper cost of action based on total distance instead of amount of poses
-                        # edge_cost = len(global_plan.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
-                        edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                        if global_plan_res.succes:
+                            # TODO: get proper cost of action based on total distance instead of amount of poses
+                            edge_cost = len(global_plan_res.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                            # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                        else:
+                            # Cannot plan along this edge
+                            edge_cost = 100
 
                         rospy.loginfo("Updating cost of edge {} - {} = {}"
                                       .format(edge.origin, edge.destination, edge_cost).replace('\n', ', '))
@@ -105,7 +111,7 @@ class TopologicalActionPlanner:
                     break  # The cost is not changing anymore, we hit the optimum, use this path
                 elif current_total_cost < lowest_total_cost:
                     rospy.loginfo('The current plan has cost {}, lowest is {}. '
-                                  'Trying a to find a better plan'.format(current_total_cost, lowest_total_cost))
+                                  'Trying a to find a better plan with updated edge costs'.format(current_total_cost, lowest_total_cost))
                     lowest_total_cost = current_total_cost
 
             self._pub_grasp_marker.publish(create_tap_marker_array(graph, self.ed))

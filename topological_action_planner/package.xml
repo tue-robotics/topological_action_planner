@@ -17,6 +17,7 @@
   <depend>topological_action_planner_msgs</depend>
   <depend>visualization_msgs</depend>
 
+  <exec_depend>cb_base_navigation_msgs</exec_depend>
   <exec_depend>ed_gui_server_msgs</exec_depend>
   <exec_depend>ed_msgs</exec_depend>
   <exec_depend>ed_navigation_msgs</exec_depend>

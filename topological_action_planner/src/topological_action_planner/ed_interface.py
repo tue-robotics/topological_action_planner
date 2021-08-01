@@ -7,6 +7,7 @@ from std_msgs.msg import Header
 from ed_gui_server_msgs.srv import GetEntityInfo, GetEntityInfoResponse
 from ed_msgs.srv import Configure, SimpleQuery, SimpleQueryRequest, UpdateSrv
 from ed_navigation_msgs.srv import GetGoalConstraint
+from cb_base_navigation_msgs.msg import PositionConstraint
 
 
 def pose_stamped(x, y, z=0.0, qx=0.0, qy=0.0, qz=0.0, qw=1.0, frame_id='map'):
@@ -45,7 +46,7 @@ class EdInterface:
                         'in_front_of': pose_stamped(1.4, -1.5),
                         'in_front_of2': pose_stamped(0.6, -1.5)},
                    'robot':
-                       {'': pose_stamped(2.0, -2.0)}}
+                       {'': pose_stamped(2.0, -1.5)}}
         return mapping[entity][area]
 
     def get_area_constraint(self, entity: str, area: str) -> str:
@@ -53,6 +54,6 @@ class EdInterface:
         res = self._get_constraint_srv(entity_ids=[entity],
                                        area_names=[area])
         if not res.error_msg:
-            return res.position_constraint_map_frame
+            return PositionConstraint(constraint=res.position_constraint_map_frame, frame="map")
         else:
             raise Exception("Cannot get a constraint for {}.{}".format(entity, area))
