@@ -24,11 +24,11 @@ class TopologicalActionPlanner:
                                                                Edge.ACTION_OPEN_DOOR: 5,  # per door opened
                                                                Edge.ACTION_PUSH_OBJECT: 10})  # per item pushed
 
-        self.ed = EdInterface()
+        self.ed = EdInterface('hero', None)
 
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service('~update_edge', UpdateEdge, self._srv_update_edge_cb)
-        self._pub_grasp_marker = rospy.Publisher('~graph', MarkerArray, queue_size=10)
+        self._pub_grasp_marker = rospy.Publisher('~graph', MarkerArray, queue_size=10, latch=True)
 
         # self.G = generate_dummy_graph()
         # to_yaml(self.G, '/tmp/graph.yaml')
@@ -36,7 +36,7 @@ class TopologicalActionPlanner:
         self._global_planner = rospy.ServiceProxy('/global_planner/get_plan_srv', GetPlan)
         if self.plot:
             visualize(self.G)
-        self._pub_grasp_marker.publish(create_tap_marker_array(self.G))
+        self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self.ed))
 
     def _srv_plan_cb(self, req):
         # type: (PlanRequest) -> PlanResponse
