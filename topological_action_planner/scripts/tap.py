@@ -50,27 +50,29 @@ class TopologicalActionPlanner:
             # This indicates the plan starts from the robot's current pose
             # We'll insert a node corresponding to our current position.
             # Difficulty is determining it's adjacency to other nodes, based on geometry
-            u = 'current', 'current'
+            origin_node = 'robot', ''
 
             # Ask ED in which room the robot is currently, maybe based on it's pose
             current_room = self.ed.get_room('robot')
 
+            # TODO: This assumes that the robot can always drive to any other node in the same room.
+            # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
             nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'] == current_room]
             for node in nodes_in_same_room:
                 # Will be updated later when taking path length into account later
-                graph.add_edge(u, node, action_type=Edge.ACTION_DRIVE, weight=1)
+                graph.add_edge(origin_node, node, action_type=Edge.ACTION_DRIVE, weight=1)
         else:
-            u = req.origin.entity, req.origin.area
+            origin_node = req.origin.entity, req.origin.area
 
-        v = req.destination.entity, req.destination.area
-        rospy.loginfo("Requesting topological action plan from {} to {}".format(u, v))
+        dst_node = req.destination.entity, req.destination.area
+        rospy.loginfo("Requesting topological action plan from {} to {}".format(origin_node, dst_node))
 
         try:
             lowest_total_cost = float('inf')
             while True:
                 path = nx.shortest_path(graph,
-                                        (req.origin.entity, req.origin.area),
-                                        (req.destination.entity, req.destination.area),
+                                        origin_node,
+                                        dst_node,
                                         weight='weight')
 
                 edges = []
@@ -106,6 +108,7 @@ class TopologicalActionPlanner:
                                   'Trying a to find a better plan'.format(current_total_cost, lowest_total_cost))
                     lowest_total_cost = current_total_cost
 
+            self._pub_grasp_marker.publish(create_tap_marker_array(graph, self.ed))
             rospy.loginfo("Found plan of {} edges".format(len(edges)))
             return PlanResponse(error_msg='', error_code=PlanResponse.SUCCESS, edges=edges)
         except nx.NetworkXNoPath as no_path_found_ex:

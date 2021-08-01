@@ -42,7 +42,9 @@ class EdInterface:
                    'door':
                        {'': pose_stamped(1.0, -1.5),
                         'in_front_of': pose_stamped(1.4, -1.5),
-                        'in_front_of2': pose_stamped(0.6, -1.5)}}
+                        'in_front_of2': pose_stamped(0.6, -1.5)},
+                   'robot':
+                       {'': pose_stamped(2.0, -2.0)}}
         return mapping[entity][area]
 
     def get_area_constraint(self, entity: str, area: str) -> str:
