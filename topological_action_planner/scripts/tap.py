@@ -1,13 +1,16 @@
 #! /usr/bin/env python
 import copy
+import math
 
 import rospy
 import networkx as nx
+from typing import List
 
 from topological_action_planner_msgs.msg import Edge, Node
 from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 from visualization_msgs.msg import MarkerArray
+from geometry_msgs.msg import PoseStamped
 
 from topological_action_planner.ed_interface import EdInterface
 from topological_action_planner.serialisation import from_dicts
@@ -16,10 +19,19 @@ from topological_action_planner.visualisation import create_tap_marker_array
 from cb_base_navigation_msgs.srv import GetPlan, GetPlanRequest, GetPlanResponse
 
 
+def compute_path_length(path: List[PoseStamped]) -> float:
+    return sum(math.hypot(a.pose.position.x - b.pose.position.x,
+                          a.pose.position.y - b.pose.position.y)
+               for a, b
+               in zip(path, path[1:]))
+
+
 class TopologicalActionPlanner:
     def __init__(self):
         self.G = from_dicts(rospy.get_param('~edges'))
         self.plot = rospy.get_param('~plot', False)
+
+        # TODOIt's a kind of magic...
         self._action_costs = rospy.get_param('~action_costs', {Edge.ACTION_DRIVE: 1,  # per meter distance driven
                                                                Edge.ACTION_OPEN_DOOR: 5,  # per door opened
                                                                Edge.ACTION_PUSH_OBJECT: 10})  # per item pushed
@@ -92,8 +104,8 @@ class TopologicalActionPlanner:
                         global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
 
                         if global_plan_res.succes:
-                            # TODO: get proper cost of action based on total distance instead of amount of poses
-                            edge_cost = len(global_plan_res.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                            edge_cost = compute_path_length(global_plan_res.plan) * \
+                                        self._action_costs[Edge.ACTION_DRIVE]
                             # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
                         else:
                             # Cannot plan along this edge
