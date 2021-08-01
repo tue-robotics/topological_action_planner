@@ -27,7 +27,8 @@ class EdInterface:
     def get_room(self, entity: str, area: str) -> str:
         """In which room is a particular entity?"""
 
-        mapping = {'coffee_table': {'in_front_of': 'test_area'},
+        mapping = {'coffee_table': {'in_front_of': 'test_area2',
+                                    'in_front_of2': 'breakfast_room'},
                    'biestheuvel_door': {'in_front_of': 'test_area'},
                    'door': {'in_front_of': 'test_area',
                             'in_front_of2': 'test_area2'},
@@ -38,9 +39,10 @@ class EdInterface:
         """What is the center pose of an entity and area?"""
 
         mapping = {'coffee_table':
-                       {'': pose_stamped(2.0, 0.0),
-                        'in_front_of': pose_stamped(2.8, 0.0),
-                        'on_top_of': pose_stamped(2.0, 0.0)},
+                       {'': pose_stamped(0.0, 0.0),
+                        'in_front_of': pose_stamped(0.5, 0.0),
+                        'in_front_of2': pose_stamped(-0.5, 0.0),
+                        'on_top_of': pose_stamped(0.0, 0.0)},
                    'door':
                        {'': pose_stamped(1.0, -1.5),
                         'in_front_of': pose_stamped(1.4, -1.5),
