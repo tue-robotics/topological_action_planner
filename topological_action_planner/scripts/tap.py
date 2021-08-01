@@ -44,7 +44,7 @@ class TopologicalActionPlanner:
         graph = copy.deepcopy(self.G)  # type: nx.Graph
 
         for node in graph.nodes.keys():
-            graph.nodes[node]['room'] = self.ed.get_room(node[0])  # Based on where they are in ED?
+            graph.nodes[node]['room'] = self.ed.get_room(*node)  # Based on where they are in ED?
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
@@ -53,7 +53,7 @@ class TopologicalActionPlanner:
             origin_node = 'robot', ''
 
             # Ask ED in which room the robot is currently, maybe based on it's pose
-            current_room = self.ed.get_room('robot')
+            current_room = self.ed.get_room(*origin_node)
 
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints

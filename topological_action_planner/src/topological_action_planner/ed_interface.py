@@ -23,14 +23,15 @@ class EdInterface:
         self._ed_entity_info_query_srv = rospy.ServiceProxy('/%s/ed/gui/get_entity_info' % robot_name, GetEntityInfo)
         self._get_constraint_srv = rospy.ServiceProxy('/%s/ed/navigation/get_constraint' % robot_name, GetGoalConstraint)
 
-    def get_room(self, entity: str) -> str:
+    def get_room(self, entity: str, area: str) -> str:
         """In which room is a particular entity?"""
 
-        mapping = {'coffee_table': 'test_area',
-                   'biestheuvel_door': 'test_area',
-                   'door': 'test_area',
-                   'robot': 'test_area'}
-        return mapping[entity]
+        mapping = {'coffee_table': {'in_front_of': 'test_area'},
+                   'biestheuvel_door': {'in_front_of': 'test_area'},
+                   'door': {'in_front_of': 'test_area',
+                            'in_front_of2': 'test_area2'},
+                   'robot': {'': 'test_area'}}
+        return mapping[entity][area]
 
     def get_center_pose(self, entity: str, area: str) -> PoseStamped:
         """What is the center pose of an entity and area?"""
