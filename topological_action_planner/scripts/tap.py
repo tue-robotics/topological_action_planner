@@ -84,15 +84,17 @@ class TopologicalActionPlanner:
                 for edge in edges:
                     if edge.action_type == Edge.ACTION_DRIVE:
                         src = self.ed.get_center_pose(edge.origin.entity, edge.origin.area)
-                        dst = self.ed.get_area_contraint(edge.destination.entity, edge.destination.area)
-                        global_plan = self._global_planner(src, dst)
+                        dst = self.ed.get_area_constraint(edge.destination.entity, edge.destination.area)
+                        # global_plan = self._global_planner(src, dst)
 
                         # TODO: get proper cost of action based on total distance instead of amount of poses
-                        edge_cost = len(global_plan.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                        # edge_cost = len(global_plan.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+                        edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
 
                         rospy.loginfo("Updating cost of edge {} - {} = {}"
-                                      .format(edge.origin, edge.destination, edge_cost))
-                        graph.edges[edge.origin][edge.destination] = edge_cost
+                                      .format(edge.origin, edge.destination, edge_cost).replace('\n', ', '))
+                        graph[(edge.origin.entity, edge.origin.area)]\
+                            [(edge.destination.entity, edge.destination.area)]['weight'] = edge_cost
                         edge.cost = edge_cost
 
                 current_total_cost = sum([edge.cost for edge in edges])
