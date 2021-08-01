@@ -2,11 +2,17 @@ from __future__ import print_function
 
 # TU/e
 import rospy
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
+from std_msgs.msg import Header
 from ed_gui_server_msgs.srv import GetEntityInfo, GetEntityInfoResponse
 from ed_msgs.srv import Configure, SimpleQuery, SimpleQueryRequest, UpdateSrv
-# Robot skills
-from robot_skills.util.entity import from_entity_info
-from robot_skills.util.kdl_conversions import VectorStamped, kdl_vector_to_point_msg
+from ed_navigation_msgs.srv import GetGoalConstraint
+
+
+def pose_stamped(x, y, z=0.0, qx=0.0, qy=0.0, qz=0.0, qw=1.0, frame_id='map'):
+    return PoseStamped(header=Header(frame_id=frame_id),
+                       pose=Pose(position=Point(x, y, z),
+                                 orientation=Quaternion(qx, qy, qz, qw)))
 
 
 class EdInterface:
@@ -15,56 +21,35 @@ class EdInterface:
         self.tf_buffer = tf_buffer
         self._ed_simple_query_srv = rospy.ServiceProxy('/%s/ed/simple_query' % robot_name, SimpleQuery)
         self._ed_entity_info_query_srv = rospy.ServiceProxy('/%s/ed/gui/get_entity_info' % robot_name, GetEntityInfo)
+        self._get_constraint_srv = rospy.ServiceProxy('/%s/ed/navigation/get_constraint' % robot_name, GetGoalConstraint)
 
-    def get_entities(self, type="", center_point=VectorStamped(), radius=float('inf'), id=""):
-        """
-        Get entities via Simple Query interface
+    def get_room(self, entity: str) -> str:
+        """In which room is a particular entity?"""
 
-        :param type: Type of entity
-        :param center_point: Point from which radius is measured
-        :param radius: Distance between center_point and entity
-        :param id: ID of entity
-        """
+        mapping = {'coffee_table': 'test_area',
+                   'biestheuvel_door': 'test_area',
+                   'door': 'test_area',
+                   'robot': 'test_area'}
+        return mapping[entity]
 
-        center_point_in_map = center_point.projectToFrame("map", self.tf_buffer)
-        query = SimpleQueryRequest(id=id, type=type, center_point=kdl_vector_to_point_msg(center_point_in_map.vector),
-                                   radius=radius, ignore_z=True)
+    def get_center_pose(self, entity: str, area: str) -> PoseStamped:
+        """What is the center pose of an entity and area?"""
 
-        try:
-            entity_infos = self._ed_simple_query_srv(query).entities
-            entities = list(map(from_entity_info, entity_infos))
-        except Exception as e:
-            rospy.logerr("ERROR: ed.get_entities(id={}, type={}, center_point={}, radius={})".format(
-                id, type, str(center_point), str(radius)))
-            rospy.logerr("L____> [%s]" % e)
-            return []
+        mapping = {'coffee_table':
+                       {'': pose_stamped(2.0, 0.0),
+                        'in_front_of': pose_stamped(2.8, 0.0),
+                        'on_top_of': pose_stamped(2.0, 0.0)},
+                   'door':
+                       {'': pose_stamped(1.0, -1.5),
+                        'in_front_of': pose_stamped(1.4, -1.5),
+                        'in_front_of2': pose_stamped(0.6, -1.5)}}
+        return mapping[entity][area]
 
-        return entities
-
-    def get_closest_entity(self, type="", center_point=None, radius=float('inf')):
-        if not center_point:
-            center_point = VectorStamped(x=0, y=0, z=0, frame_id=self.robot_name + "/base_link")
-
-        entities = self.get_entities(type=type, center_point=center_point, radius=radius)
-
-        # HACK
-        entities = [e for e in entities if e.shape is not None and e.type != ""]
-
-        if len(entities) == 0:
-            return None
-
-        # Sort by distance
-        try:
-            center_in_map = center_point.projectToFrame("map", self.tf_buffer)
-            entities = sorted(entities, key=lambda entity: entity.distance_to_2d(center_in_map.vector))
-        except Exception as e:
-            rospy.logerr("Failed to sort entities: {}".format(e))
-            return None
-
-        return entities[0]
-
-    def get_closest_room(self, center_point=None, radius=float('inf')):
-        if not center_point:
-            center_point = VectorStamped(x=0, y=0, z=0, frame_id="/" + self.robot_name + "/base_link")
-
-        return self.get_closest_entity(type="room", center_point=center_point, radius=radius)
+    def get_area_constraint(self, entity: str, area: str) -> str:
+        """What is the center pose of an entity and area?"""
+        res = self._get_constraint_srv(entity_ids=[entity],
+                                       area_names=[area])
+        if not res.error_msg:
+            return res.position_constraint_map_frame
+        else:
+            raise Exception("Cannot get a constraint for {}.{}".format(entity, area))

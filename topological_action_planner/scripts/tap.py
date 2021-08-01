@@ -9,6 +9,7 @@ from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 from visualization_msgs.msg import MarkerArray
 
+from topological_action_planner.ed_interface import EdInterface
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
@@ -22,6 +23,8 @@ class TopologicalActionPlanner:
         self.G = from_dicts(rospy.get_param('~edges'))
         self.plot = rospy.get_param('~plot', False)
 
+        self.ed = EdInterface()
+
         self._srv_plan = rospy.Service('~get_plan', Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service('~update_edge', UpdateEdge, self._srv_update_edge_cb)
         self._pub_grasp_marker = rospy.Publisher('~graph', MarkerArray, queue_size=10)
@@ -29,7 +32,6 @@ class TopologicalActionPlanner:
         # self.G = generate_dummy_graph()
         # to_yaml(self.G, '/tmp/graph.yaml')
 
-        self._ed = None
         self._global_planner = rospy.ServiceProxy('/global_planner/get_plan_srv', GetPlan)
         if self.plot:
             visualize(self.G)
@@ -41,7 +43,7 @@ class TopologicalActionPlanner:
         graph = copy.deepcopy(self.G)  # type: nx.Graph
 
         for node in graph.nodes.keys():
-            graph.nodes[node]['room'] = self.ed.get_room(*node)  # Based on where they are in ED?
+            graph.nodes[node]['room'] = self.ed.get_room(node[0])  # Based on where they are in ED?
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
@@ -80,8 +82,8 @@ class TopologicalActionPlanner:
                 # For the drive edges, query the maybe now updated cost of driving that with current knowledge
                 for edge in edges:
                     if edge.action_type == Edge.ACTION_DRIVE:
-                        src = self.ed.get_pose(edge.origin)
-                        dst = self.ed.get_constraint(edge.destination)
+                        src = self.ed.get_center_pose(edge.origin.entity, edge.origin.area)
+                        dst = self.ed.get_area_contraint(edge.destination.entity, edge.destination.area)
                         global_plan = self._global_planner(src, dst)
 
                         edge_cost = len(global_plan.plan) * COST_PER_POSE
