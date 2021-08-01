@@ -33,6 +33,7 @@ def create_tap_marker_array(graph, ed, frame="map"):
         e_mark.scale.z = 0.1
         e_mark.color.b = 1
         e_mark.color.a = 1
+        e_mark.pose.orientation.w = 1  # To squelch annoying messages about uninitialized quats
         e_mark.points = [ed.get_center_pose(origin[0], origin[1]).pose.position,
                          ed.get_center_pose(destination[0], destination[1]).pose.position]
         marker_array.markers.append(e_mark)
