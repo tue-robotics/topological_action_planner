@@ -23,7 +23,7 @@ def generate_dummy_graph(n_nodes=10, n_edges=20):
                        # 60% chance of driving, 30% doors, 10% pushing:
                        action_type=random.choice([Edge.ACTION_DRIVE] * 6 +
                                                  [Edge.ACTION_OPEN_DOOR] * 3 +
-                                                 [Edge.ACTION_DRIVE]))
+                                                 [Edge.ACTION_PUSH_OBJECT]))
 
     return graph
 

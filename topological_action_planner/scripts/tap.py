@@ -15,13 +15,14 @@ from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
 from cb_base_navigation_msgs.srv import GetPlan
 
-COST_PER_POSE = 1
-
 
 class TopologicalActionPlanner:
     def __init__(self):
         self.G = from_dicts(rospy.get_param('~edges'))
         self.plot = rospy.get_param('~plot', False)
+        self._action_costs = rospy.get_param('~action_costs', {Edge.ACTION_DRIVE: 1,  # per meter distance driven
+                                                               Edge.ACTION_OPEN_DOOR: 5,  # per door opened
+                                                               Edge.ACTION_PUSH_OBJECT: 10})  # per item pushed
 
         self.ed = EdInterface()
 
@@ -86,7 +87,8 @@ class TopologicalActionPlanner:
                         dst = self.ed.get_area_contraint(edge.destination.entity, edge.destination.area)
                         global_plan = self._global_planner(src, dst)
 
-                        edge_cost = len(global_plan.plan) * COST_PER_POSE
+                        # TODO: get proper cost of action based on total distance instead of amount of poses
+                        edge_cost = len(global_plan.plan) * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
 
                         rospy.loginfo("Updating cost of edge {} - {} = {}"
                                       .format(edge.origin, edge.destination, edge_cost))
