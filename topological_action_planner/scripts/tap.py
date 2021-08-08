@@ -106,7 +106,6 @@ class TopologicalActionPlanner:
                     if edge.action_type == Edge.ACTION_DRIVE:
                         # TODO: we should actually plan from the end of the plan found for the previous edge.
                         # Otherwise the center pose could be blocked but not e whole area and we would still fail.
-                        breakpoint()
                         src_vector = self.wm.get_entity(edge.origin.entity).volumes[edge.origin.area].center_point
                         src = PoseStamped(header=Header(frame_id='map'),
                                           pose=Pose(position=Point(src_vector.x, src_vector.y, 0),
