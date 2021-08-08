@@ -169,6 +169,7 @@ class TopologicalActionPlanner:
         else:
             raise Exception("Cannot get a constraint for {}.{}".format(entity, area))
 
+
 if __name__ == "__main__":
     rospy.init_node("topological_action_planner")
 
