@@ -15,7 +15,6 @@ from std_msgs.msg import Header
 
 from ed_py.utility import rooms_of_volume  # TODO: Rename to ed_python for consistency sake
 from ed_py.world_model import WM
-from topological_action_planner.ed_interface import EdInterface
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
