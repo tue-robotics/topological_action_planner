@@ -1,7 +1,7 @@
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from ed_py.world_model import WM
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, Pose, Vector3, Quaternion
 
 
 def create_tap_marker_array(graph, wm: WM, frame="map"):
@@ -23,7 +23,14 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
         n_mark.scale.z = 0.1
         n_mark.color.a = 1
         n_mark.color.r = 1
-        n_mark.pose = wm.get_entity(entity_id).volumes[area].center_point
+        entity = wm.get_entity(entity_id)
+        if not entity:
+            rospy.logwarn("No such entity '{}'".format(entity_id))
+            continue
+        n_mark.pose = Pose(position=Vector3(entity.volumes[area].center_point.x(),
+                                            entity.volumes[area].center_point.y(),
+                                            entity.volumes[area].center_point.y()),
+                           orientation=Quaternion(0, 0, 0, 1))  # TODO: convert to Pose
         marker_array.markers.append(n_mark)
 
     for j, (origin, destination) in enumerate(graph.edges.keys()):
@@ -40,10 +47,19 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
         e_mark.color.a = 1
         e_mark.pose.orientation.w = 1  # To squelch annoying messages about uninitialized quats
 
-        vec1 = wm.get_entity(origin[0]).volumes[origin[1]].center_point
-        vec2 = wm.get_entity(destination[0]).volumes[destination[1]].center_point
-        e_mark.points = [Point(vec1.x, vec1.y, vec1.z),
-                         Point(vec2.x, vec2.y, vec2.z)]
+        origin_entity = wm.get_entity(origin[0])
+        if not origin_entity:
+            rospy.logwarn("No such entity '{}'".format(origin[0]))
+            continue
+        vec1 = origin_entity.volumes[origin[1]].center_point
+
+        destination_entity = wm.get_entity(destination[0])
+        if not destination_entity:
+            rospy.logwarn("No such entity '{}'".format(destination[0]))
+            continue
+        vec2 = destination_entity.volumes[destination[1]].center_point
+        e_mark.points = [Point(vec1.x(), vec1.y(), vec1.z()),
+                         Point(vec2.x(), vec2.y(), vec2.z())]
         marker_array.markers.append(e_mark)
 
     return marker_array
