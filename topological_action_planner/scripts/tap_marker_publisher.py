@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # license removed for brevity
 
-#TODO after the visualisation is tested this file can be removed
+# TODO after the visualisation is tested this file can be removed
 
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
@@ -9,8 +9,8 @@ from geometry_msgs.msg import Point
 
 
 def pub_marker():
-    pub = rospy.Publisher('TAP_Marker', MarkerArray, queue_size=10)
-    rospy.init_node('tap_marker_publisher', anonymous=True)
+    pub = rospy.Publisher("TAP_Marker", MarkerArray, queue_size=10)
+    rospy.init_node("tap_marker_publisher", anonymous=True)
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
         markerarray = MarkerArray()
@@ -32,7 +32,7 @@ def pub_marker():
         rate.sleep()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         pub_marker()
     except rospy.ROSInterruptException:
