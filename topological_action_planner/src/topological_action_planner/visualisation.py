@@ -23,10 +23,6 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
         n_mark.scale.z = 0.1
         n_mark.color.a = 1
         n_mark.color.r = 1
-        entity = wm.get_entity(entity_id)
-        if not entity:
-            rospy.logwarn("No such entity '{}'".format(entity_id))
-            continue
         n_mark.pose = Pose(position=Vector3(entity.volumes[area].center_point.x(),
                                             entity.volumes[area].center_point.y(),
                                             entity.volumes[area].center_point.y()),
