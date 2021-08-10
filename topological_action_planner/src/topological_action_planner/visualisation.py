@@ -5,6 +5,7 @@ from visualization_msgs.msg import MarkerArray, Marker
 def create_tap_marker_array(graph, ed, frame="map"):
     marker_array = MarkerArray()
     stamp = rospy.Time.now()
+    rgb_list = {'DRIVE': [0, 0, 1], 'OPEN_DOOR': [0, 1, 0], 'PUSH_OBJECT': [1, 1, 0]}
 
     for i, (entity, area) in enumerate(graph.nodes.keys()):
         n_mark = Marker()
@@ -28,14 +29,19 @@ def create_tap_marker_array(graph, ed, frame="map"):
         e_mark.type = Marker.LINE_LIST
         e_mark.ns = 'edges'
         e_mark.id = j + len(graph.nodes.keys())
-        e_mark.scale.x = 0.1
-        e_mark.scale.y = 0.1
-        e_mark.scale.z = 0.1
-        e_mark.color.b = 1
+        edge_info = graph.edges[origin, destination]
+        color_vec = rgb_list[edge_info['action_type']]
+        line_weight = 0.1*edge_info['weight']
+        e_mark.scale.x = line_weight
+        e_mark.scale.y = line_weight
+        e_mark.scale.z = line_weight
+        e_mark.color.r = color_vec[0]
+        e_mark.color.g = color_vec[1]
+        e_mark.color.b = color_vec[2]
         e_mark.color.a = 1
         e_mark.pose.orientation.w = 1  # To squelch annoying messages about uninitialized quats
-        e_mark.points = [ed.get_center_pose(origin[0], origin[1]).pose.position,
-                         ed.get_center_pose(destination[0], destination[1]).pose.position]
+        e_mark.points = [ed.get_center_pose(*origin).pose.position,
+                         ed.get_center_pose(*destination).pose.position]
         marker_array.markers.append(e_mark)
 
     return marker_array
