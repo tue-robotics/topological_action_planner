@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 # TU/e
 import rospy
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
