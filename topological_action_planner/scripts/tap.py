@@ -13,7 +13,7 @@ from visualization_msgs.msg import MarkerArray
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header
 
-from ed_py.utility import rooms_of_volume  # TODO: Rename to ed_python for consistency sake
+from ed_py.utility import rooms_of_volume, rooms_of_entity # TODO: Rename to ed_python for consistency sake
 from ed_py.world_model import WM
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
@@ -56,6 +56,8 @@ class TopologicalActionPlanner:
             visualize(self.G)
         self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self.wm))
 
+        rospy.loginfo("Topological action planner started")
+
     def _srv_plan_cb(self, req):
         # type: (PlanRequest) -> PlanResponse
 
@@ -69,14 +71,14 @@ class TopologicalActionPlanner:
             # This indicates the plan starts from the robot's current pose
             # We'll insert a node corresponding to our current position.
             # Difficulty is determining it's adjacency to other nodes, based on geometry
-            origin_node = 'robot', ''
-            robot_entity = self.wm.get_entity(origin_node[0])
+            origin_node = 'robot', ''  # TODO: Read robot name from param server?
+            robot_entity = self.wm.get_entity('hero')
             # Ask ED in which room the robot is currently, maybe based on it's pose
-            current_room = rooms_of_volume(self.wm, robot_entity, origin_node[1])
-
+            current_rooms = rooms_of_entity(self.wm, robot_entity)
+            current_room_ids = [r.uuid for r in current_rooms]
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
-            nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'] == current_room]
+            nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'] in current_room_ids]
             for node in nodes_in_same_room:
                 # Will be updated later when taking path length into account later
                 graph.add_edge(origin_node, node, action_type=Edge.ACTION_DRIVE, weight=1)
