@@ -62,16 +62,17 @@ class TopologicalActionPlanner:
         graph = copy.deepcopy(self.G)  # type: nx.Graph
 
         for node in graph.nodes.keys():
-            graph.nodes[node]['room'] = rooms_of_volume(self.wm, *node)  # Based on where they are in ED?
+            node0_entity = self.wm.get_entity(node[0])
+            graph.nodes[node]['room'] = rooms_of_volume(self.wm, node0_entity, node[1])  # Based on where they are in ED?
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
             # We'll insert a node corresponding to our current position.
             # Difficulty is determining it's adjacency to other nodes, based on geometry
             origin_node = 'robot', ''
-
+            robot_entity = self.wm.get_entity(origin_node[0])
             # Ask ED in which room the robot is currently, maybe based on it's pose
-            current_room = rooms_of_volume(self.wm, *origin_node)
+            current_room = rooms_of_volume(self.wm, robot_entity, origin_node[1])
 
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
