@@ -2,7 +2,7 @@
   cost: 1
   origin:
     entity: 'door'
-    area: in_front_of2
+    area: inward
   destination:
     entity: 'coffee_table'
     area: in_front_of
@@ -10,10 +10,10 @@
   cost: 5
   origin:
     entity: 'door'
-    area: in_front_of
+    area: inward
   destination:
     entity: 'door'
-    area: in_front_of2
+    area: outward
 - action_type: PUSH_OBJECT
   cost: 10
   origin:

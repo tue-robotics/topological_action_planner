@@ -124,7 +124,10 @@ class TopologicalActionPlanner:
                         if not entity:
                             rospy.logwarn("No entity '{}'".format(edge.origin.entity))
                             continue
-                        src_vector = entity.volumes[edge.origin.area].center_point
+
+                        src_vector = entity.volumes[
+                            edge.origin.area
+                        ].center_point  # TODO: This point is wrt the entity!
                         src = PoseStamped(
                             header=Header(frame_id="map"),
                             pose=Pose(
