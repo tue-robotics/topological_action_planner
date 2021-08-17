@@ -14,13 +14,11 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>topological_action_planner_msgs</depend>
-  <depend>visualization_msgs</depend>
-
   <exec_depend>cb_base_navigation_msgs</exec_depend>
   <exec_depend>ed_gui_server_msgs</exec_depend>
   <exec_depend>ed_msgs</exec_depend>
   <exec_depend>ed_navigation_msgs</exec_depend>
+  <exec_depend>ed_python</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>genpy</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-matplotlib</exec_depend>
@@ -29,5 +27,7 @@
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-networkx</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>topological_action_planner_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
 
 </package>
