@@ -17,7 +17,7 @@ from visualization_msgs.msg import MarkerArray
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header
 
-from ed_py.utility import rooms_of_volume, rooms_of_entity # TODO: Rename to ed_python for consistency sake
+from ed_py.utility import rooms_of_volume, rooms_of_entity  # TODO: Rename to ed_python for consistency sake
 from ed_py.world_model import WM
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
@@ -51,7 +51,7 @@ class TopologicalActionPlanner:
 
         self.wm = WM()
 
-        self._get_constraint_srv = rospy.ServiceProxy('/ed/navigation/get_constraint', GetGoalConstraint)
+        self._get_constraint_srv = rospy.ServiceProxy("/ed/navigation/get_constraint", GetGoalConstraint)
 
         self._srv_plan = rospy.Service("~get_plan", Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service("~update_edge", UpdateEdge, self._srv_update_edge_cb)
@@ -74,20 +74,22 @@ class TopologicalActionPlanner:
 
         for node in graph.nodes.keys():
             node0_entity = self.wm.get_entity(node[0])
-            graph.nodes[node]['room'] = rooms_of_volume(self.wm, node0_entity, node[1])  # Based on where they are in ED?
+            graph.nodes[node]["room"] = rooms_of_volume(
+                self.wm, node0_entity, node[1]
+            )  # Based on where they are in ED?
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
             # We'll insert a node corresponding to our current position.
             # Difficulty is determining it's adjacency to other nodes, based on geometry
-            origin_node = 'robot', ''  # TODO: Read robot name from param server?
-            robot_entity = self.wm.get_entity('hero')
+            origin_node = "robot", ""  # TODO: Read robot name from param server?
+            robot_entity = self.wm.get_entity("hero")
             # Ask ED in which room the robot is currently, maybe based on it's pose
             current_rooms = rooms_of_entity(self.wm, robot_entity)
             current_room_ids = [r.uuid for r in current_rooms]
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
-            nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'] in current_room_ids]
+            nodes_in_same_room = [node for node, info in graph.nodes.items() if info["room"] in current_room_ids]
             for node in nodes_in_same_room:
                 # Will be updated later when taking path length into account later
                 graph.add_edge(origin_node, node, action_type=Edge.ACTION_DRIVE, weight=1)
@@ -123,11 +125,16 @@ class TopologicalActionPlanner:
                             rospy.logwarn("No entity '{}'".format(edge.origin.entity))
                             continue
                         src_vector = entity.volumes[edge.origin.area].center_point
-                        src = PoseStamped(header=Header(frame_id='map'),
-                                          pose=Pose(position=Point(src_vector.x, src_vector.y, 0),
-                                                    orientation=Quaternion(0, 0, 0, 1)))
+                        src = PoseStamped(
+                            header=Header(frame_id="map"),
+                            pose=Pose(
+                                position=Point(src_vector.x, src_vector.y, 0), orientation=Quaternion(0, 0, 0, 1)
+                            ),
+                        )
                         dst = self.wm.get_area_constraint(edge.destination.entity, edge.destination.area)
-                        global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
+                        global_plan_res = self._global_planner(
+                            GetPlanRequest(start=src, goal_position_constraints=[dst])
+                        )
 
                         if global_plan_res.succes:
                             edge_cost = (
@@ -195,8 +202,7 @@ class TopologicalActionPlanner:
 
     def get_area_constraint(self, entity: str, area: str) -> str:
         """What is the center pose of an entity and area?"""
-        res = self._get_constraint_srv(entity_ids=[entity],
-                                       area_names=[area])
+        res = self._get_constraint_srv(entity_ids=[entity], area_names=[area])
         if not res.error_msg:
             return PositionConstraint(constraint=res.position_constraint_map_frame, frame="map")
         else:
