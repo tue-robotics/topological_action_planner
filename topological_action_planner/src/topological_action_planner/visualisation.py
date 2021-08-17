@@ -24,10 +24,14 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
         n_mark.scale.z = 0.1
         n_mark.color.a = 1
         n_mark.color.r = 1
-        n_mark.pose = Pose(position=Vector3(entity.volumes[area].center_point.x(),
-                                            entity.volumes[area].center_point.y(),
-                                            entity.volumes[area].center_point.y()),
-                           orientation=Quaternion(0, 0, 0, 1))  # TODO: convert to Pose
+        n_mark.pose = Pose(
+            position=Vector3(
+                entity.volumes[area].center_point.x(),
+                entity.volumes[area].center_point.y(),
+                entity.volumes[area].center_point.y(),
+            ),
+            orientation=Quaternion(0, 0, 0, 1),
+        )  # TODO: convert to Pose
         marker_array.markers.append(n_mark)
 
     for j, (origin, destination) in enumerate(graph.edges.keys()):
@@ -60,10 +64,7 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
             rospy.logwarn("No such entity '{}'".format(destination[0]))
             continue
         vec2 = destination_entity.volumes[destination[1]].center_point
-        e_mark.points = [
-            Point(vec1.x(), vec1.y(), vec1.z()),
-            Point(vec2.x(), vec2.y(), vec2.z())
-        ]
+        e_mark.points = [Point(vec1.x(), vec1.y(), vec1.z()), Point(vec2.x(), vec2.y(), vec2.z())]
         marker_array.markers.append(e_mark)
 
     return marker_array
