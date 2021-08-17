@@ -30,4 +30,12 @@
   <exec_depend>topological_action_planner_msgs</exec_depend>
   <exec_depend>visualization_msgs</exec_depend>
 
+  <doc_depend>python3-sphinx</doc_depend>
+  <doc_depend>python-sphinx-autoapi-pip</doc_depend>
+  <doc_depend>python-sphinx-rtd-theme-pip</doc_depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
+
 </package>
