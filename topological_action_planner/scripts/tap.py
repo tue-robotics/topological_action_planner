@@ -51,7 +51,7 @@ class TopologicalActionPlanner:
 
         self.wm = WM()
 
-        self._get_constraint_srv = rospy.ServiceProxy("/ed/navigation/get_constraint", GetGoalConstraint)
+        self._get_constraint_srv = rospy.ServiceProxy('ed/navigation/get_constraint', GetGoalConstraint)
 
         self._srv_plan = rospy.Service("~get_plan", Plan, self._srv_plan_cb)
         self._srv_update_edge = rospy.Service("~update_edge", UpdateEdge, self._srv_update_edge_cb)
@@ -125,6 +125,7 @@ class TopologicalActionPlanner:
                             rospy.logwarn("No entity '{}'".format(edge.origin.entity))
                             continue
                         src_vector = entity.volumes[edge.origin.area].center_point
+<<<<<<< HEAD
                         src = PoseStamped(
                             header=Header(frame_id="map"),
                             pose=Pose(
@@ -135,6 +136,13 @@ class TopologicalActionPlanner:
                         global_plan_res = self._global_planner(
                             GetPlanRequest(start=src, goal_position_constraints=[dst])
                         )
+=======
+                        src = PoseStamped(header=Header(frame_id='map'),
+                                          pose=Pose(position=Point(src_vector.x(), src_vector.y(), 0),
+                                                    orientation=Quaternion(0, 0, 0, 1)))
+                        dst = self.get_area_constraint(edge.destination.entity, edge.destination.area)
+                        global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
+>>>>>>> Get constraint area correctly
 
                         if global_plan_res.succes:
                             edge_cost = (
