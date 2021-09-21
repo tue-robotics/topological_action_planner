@@ -92,9 +92,12 @@ class TopologicalActionPlanner:
             current_room_ids = [r.uuid for r in current_rooms]
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
-            nodes_in_same_room = [node for node, info in graph.nodes.items() if info["room"] in current_room_ids]
+            nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'][0].uuid in current_room_ids]
+            if not nodes_in_same_room:
+                # TODO: What happens when the robot is not in a defined room? But eg. just outside the apartment
+                rospy.logerr("There are no nodes to connect the robot to")
             for node in nodes_in_same_room:
-                # Will be updated later when taking path length into account later
+                # TODO: Will be updated later when taking path length into account later
                 graph.add_edge(origin_node, node, action_type=Edge.ACTION_DRIVE, weight=1)
         else:
             origin_node = req.origin.entity, req.origin.area
