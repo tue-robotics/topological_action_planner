@@ -134,7 +134,7 @@ class TopologicalActionPlanner:
                         if edge.origin.area:
                             src_vector = entity.volumes[
                                 edge.origin.area
-                            ].center_point  # TODO: This point is wrt the entity!
+                            ].center_point
                             src = PoseStamped(
                                 header=Header(frame_id=entity.uuid),
                                 pose=Pose(
