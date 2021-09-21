@@ -131,15 +131,20 @@ class TopologicalActionPlanner:
                             rospy.logwarn("No entity '{}'".format(edge.origin.entity))
                             continue
 
-                        src_vector = entity.volumes[
-                            edge.origin.area
-                        ].center_point  # TODO: This point is wrt the entity!
-                        src = PoseStamped(
-                            header=Header(frame_id="map"),
-                            pose=Pose(
-                                position=Point(src_vector.x(), src_vector.y(), 0), orientation=Quaternion(0, 0, 0, 1)
-                            ),
-                        )
+                        if edge.origin.area:
+                            src_vector = entity.volumes[
+                                edge.origin.area
+                            ].center_point  # TODO: This point is wrt the entity!
+                            src = PoseStamped(
+                                header=Header(frame_id=entity.uuid),
+                                pose=Pose(
+                                    position=Point(src_vector.x(), src_vector.y(), 0),
+                                    orientation=Quaternion(0, 0, 0, 1)
+                                ),
+                            )
+                        else:  # In case we have eg. robot as the source
+                            src = tf2_ros.convert(entity.pose, PoseStamped)
+
                         dst = self.get_area_constraint(edge.destination.entity, edge.destination.area)
                         global_plan_res = self._global_planner(
                             GetPlanRequest(start=src, goal_position_constraints=[dst])
