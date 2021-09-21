@@ -16,8 +16,10 @@ from topological_action_planner_msgs.srv import (
 from visualization_msgs.msg import MarkerArray
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header
+import tf2_ros
+import pykdl_ros
 
-from ed_py.utility import rooms_of_volume, rooms_of_entity  # TODO: Rename to ed_python for consistency sake
+from ed_py.utility import rooms_of_volume, rooms_of_entity
 from ed_py.world_model import WM
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.util import visualize, generate_dummy_graph
@@ -39,7 +41,7 @@ class TopologicalActionPlanner:
         self.G = from_dicts(rospy.get_param("~edges"))
         self.plot = rospy.get_param("~plot", False)
 
-        # TODOIt's a kind of magic...
+        # TODO: These are magic numbers. Can be parametrized, but these are the defaults
         self._action_costs = rospy.get_param(
             "~action_costs",
             {
@@ -82,8 +84,9 @@ class TopologicalActionPlanner:
             # This indicates the plan starts from the robot's current pose
             # We'll insert a node corresponding to our current position.
             # Difficulty is determining it's adjacency to other nodes, based on geometry
-            origin_node = "robot", ""  # TODO: Read robot name from param server?
-            robot_entity = self.wm.get_entity("hero")
+            robot_name = rospy.get_namespace().split("/")[-2]
+            robot_entity = self.wm.get_entity(robot_name)
+            origin_node = robot_name, ""
             # Ask ED in which room the robot is currently, maybe based on it's pose
             current_rooms = rooms_of_entity(self.wm, robot_entity)
             current_room_ids = [r.uuid for r in current_rooms]
