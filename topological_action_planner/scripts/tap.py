@@ -30,6 +30,12 @@ from cb_base_navigation_msgs.msg import PositionConstraint
 
 
 def compute_path_length(path: List[PoseStamped]) -> float:
+    """
+    Calculate the total length of a path by summing up the lengths of all edges
+
+    :param path: List of PoseStampeds (assumed to be all in the same frame)
+    :return sum of cartesian distances between given PoseStamped
+    """
     return sum(
         math.hypot(a.pose.position.x - b.pose.position.x, a.pose.position.y - b.pose.position.y)
         for a, b in zip(path, path[1:])
@@ -69,9 +75,11 @@ class TopologicalActionPlanner:
 
         rospy.loginfo("Topological action planner started")
 
-    def _srv_plan_cb(self, req):
-        # type: (PlanRequest) -> PlanResponse
-
+    def _srv_plan_cb(self, req: PlanRequest) -> PlanResponse:
+        """
+        Query the graph for a plan from an origin to some destination.
+        If the origin is not given, interpret that as starting from the robot's current position.
+        """
         graph = copy.deepcopy(self.G)  # type: nx.Graph
 
         for node in graph.nodes.keys():
@@ -92,9 +100,7 @@ class TopologicalActionPlanner:
             current_room_ids = [r.uuid for r in current_rooms]
             # TODO: This assumes that the robot can always drive to any other node in the same room.
             # This might not always be true of course. It may also make more sense to only connect with the closest N waypoints
-            nodes_in_same_room = [
-                node for node, info in graph.nodes.items() if info["room"][0].uuid in current_room_ids
-            ]
+            nodes_in_same_room = [node for node, info in graph.nodes.items() if info['room'][0].uuid in current_room_ids]
             if not nodes_in_same_room:
                 # TODO: What happens when the robot is not in a defined room? But eg. just outside the apartment
                 rospy.logerr("There are no nodes to connect the robot to")
@@ -134,12 +140,14 @@ class TopologicalActionPlanner:
                             continue
 
                         if edge.origin.area:
-                            src_vector = entity.volumes[edge.origin.area].center_point
+                            src_vector = entity.volumes[
+                                edge.origin.area
+                            ].center_point
                             src = PoseStamped(
                                 header=Header(frame_id=entity.uuid),
                                 pose=Pose(
                                     position=Point(src_vector.x(), src_vector.y(), 0),
-                                    orientation=Quaternion(0, 0, 0, 1),
+                                    orientation=Quaternion(0, 0, 0, 1)
                                 ),
                             )
                         else:  # In case we have eg. robot as the source
@@ -207,6 +215,9 @@ class TopologicalActionPlanner:
             return UpdateEdgeResponse(success=False)
 
     def update_edge(self, edge: Edge):
+        """
+        Update the cost and action_type of an edge
+        """
         u, v = (edge.origin.entity, edge.origin.area), (
             edge.destination.entity,
             edge.destination.area,

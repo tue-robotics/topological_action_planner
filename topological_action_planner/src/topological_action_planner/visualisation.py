@@ -4,13 +4,17 @@ import rospy
 from visualization_msgs.msg import MarkerArray, Marker
 from ed_py.world_model import WM
 from geometry_msgs.msg import Point, Pose, Vector3, Quaternion, PoseStamped
+import networkx as nx
 from pykdl_ros import VectorStamped
 import tf2_ros  # noinspection PyUnresolvedReferences
 import tf2_geometry_msgs  # noinspection PyUnresolvedReferences
 import tf2_pykdl_ros
 
 
-def create_tap_marker_array(graph, wm: WM, frame="map"):
+def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray:
+    """
+    Create a MarkerArray representing the graph
+    """
     marker_array = MarkerArray()
     stamp = rospy.Time.now()
     rgb_list = {"DRIVE": [0, 0, 1], "OPEN_DOOR": [0, 1, 0], "PUSH_OBJECT": [1, 1, 0]}

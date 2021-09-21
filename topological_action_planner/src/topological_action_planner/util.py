@@ -3,7 +3,10 @@ import networkx as nx
 from topological_action_planner_msgs.msg import Edge
 
 
-def generate_dummy_graph(n_nodes=10, n_edges=20):
+def generate_dummy_graph(n_nodes=10, n_edges=20) -> nx.Graph:
+    """
+    Generate a dummy graph of a given number of nodes and edges
+    """
     numbers = "0123456789"
     letters = "abcdefghijklmnopqrstuvwxyz"
     import random
@@ -31,7 +34,10 @@ def generate_dummy_graph(n_nodes=10, n_edges=20):
     return graph
 
 
-def visualize(graph):
+def visualize(graph: nx.Graph):
+    """
+    Plot and show a graph
+    """
     import matplotlib.pyplot as plt
 
     nx.draw(graph, with_labels=True)

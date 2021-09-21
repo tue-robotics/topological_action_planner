@@ -1,4 +1,4 @@
-from typing import Sequence, Mapping
+from typing import Sequence, Mapping, Any
 
 import genpy
 import networkx as nx
@@ -8,7 +8,10 @@ import yaml
 from topological_action_planner_msgs.msg import Edge
 
 
-def as_dicts(graph: nx.Graph):
+def as_dicts(graph: nx.Graph) -> Sequence[Mapping[str, Any]]:
+    """
+    Serialize a graph to a list of dictionaries with keys origin, destination, cost, action_type
+    """
     edges = []
     for nx_edge in graph.edges.items():
         edge_dict = {
@@ -18,9 +21,13 @@ def as_dicts(graph: nx.Graph):
             "action_type": nx_edge[1]["action_type"],
         }
         edges += [edge_dict]
+    return edges
 
 
 def to_yaml(graph: nx.Graph, filename: str):
+    """
+    Dump a graph to a yaml file
+    """
     file_dir = os.path.dirname(filename)
     if not os.path.exists(file_dir):
         os.mkdir(file_dir)
