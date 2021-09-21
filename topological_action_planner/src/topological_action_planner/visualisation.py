@@ -41,18 +41,15 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
 
         if area:
             vec = wm.tf_buffer.transform(
-                VectorStamped(
-                    entity.volumes[area].center_point, frame_id=entity.uuid, stamp=rospy.Time(0)
-                ),
+                VectorStamped(entity.volumes[area].center_point, frame_id=entity.uuid, stamp=rospy.Time(0)),
                 "map",
             )
             n_mark.pose = Pose(
-                position=Vector3(vec.vector.x(), vec.vector.y(), vec.vector.z()
-                                 ),
+                position=Vector3(vec.vector.x(), vec.vector.y(), vec.vector.z()),
                 orientation=Quaternion(0, 0, 0, 1),
             )
         else:
-            n_mark.pose = tf2_ros.convert(wm.tf_buffer.transform(entity.pose, 'map'), PoseStamped).pose
+            n_mark.pose = tf2_ros.convert(wm.tf_buffer.transform(entity.pose, "map"), PoseStamped).pose
 
         marker_array.markers.append(n_mark)
 
@@ -87,7 +84,7 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
                 "map",
             )
         else:
-            vec1 = VectorStamped.from_framestamped(wm.tf_buffer.transform(origin_entity.pose, 'map'))
+            vec1 = VectorStamped.from_framestamped(wm.tf_buffer.transform(origin_entity.pose, "map"))
 
         destination_entity = wm.get_entity(destination[0])
         if not destination_entity:
@@ -104,7 +101,7 @@ def create_tap_marker_array(graph, wm: WM, frame="map"):
                 "map",
             )
         else:
-            vec2 = VectorStamped.from_framestamped(wm.tf_buffer.transform(destination_entity.pose, 'map'))
+            vec2 = VectorStamped.from_framestamped(wm.tf_buffer.transform(destination_entity.pose, "map"))
         e_mark.points = [
             Point(vec1.vector.x(), vec1.vector.y(), vec1.vector.z()),
             Point(vec2.vector.x(), vec2.vector.y(), vec2.vector.z()),
