@@ -22,7 +22,7 @@ import pykdl_ros
 from ed_py.utility import rooms_of_volume, rooms_of_entity
 from ed_py.world_model import WM
 from topological_action_planner.serialisation import from_dicts
-from topological_action_planner.planning import TopoPlanner
+from topological_action_planner.planning import TopoPlanner, EdgeCostCalc
 from topological_action_planner.util import visualize, generate_dummy_graph
 from topological_action_planner.visualisation import create_tap_marker_array
 from cb_base_navigation_msgs.srv import GetPlan, GetPlanRequest, GetPlanResponse
@@ -46,7 +46,8 @@ class TopoPlannerNode:
         )
 
         self._wm = WM()
-        self._topo_planner = TopoPlanner(self._wm, action_costs)
+        edge_cost_calc = EdgeCostCalc(self._wm, action_costs)
+        self._topo_planner = TopoPlanner(edge_cost_calc)
 
         self._get_constraint_srv = rospy.ServiceProxy("ed/navigation/get_constraint", GetGoalConstraint)
 
