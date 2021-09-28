@@ -1,4 +1,4 @@
-Node origin
+Node origin  # When the origin Node's fields are left empty, planner must use the robot's current location as origin
 Node destination
 ---
 string error_msg
