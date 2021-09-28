@@ -1,4 +1,5 @@
 import networkx as nx
+import random
 
 from topological_action_planner_msgs.msg import Edge
 
@@ -9,7 +10,6 @@ def generate_dummy_graph(n_nodes=10, n_edges=20) -> nx.Graph:
     """
     numbers = "0123456789"
     letters = "abcdefghijklmnopqrstuvwxyz"
-    import random
 
     random.seed(123456789)
     # Make a bunch of nodes with randomly picked names from numbers and letters

@@ -52,7 +52,12 @@ class EdgeCostCalc(EdgeCostCalcBase):
 
     def __call__(self, edge: Edge) -> Optional[float]:
         # TODO: we should actually plan from the end of the plan found for the previous edge.
-        # Otherwise the center pose could be blocked but not e whole area and we would still fail.
+        #
+        # Constraint-based navigation is to be robust to blockades on a part of the goal area.
+        # When starting a plan from the center of a navigation area/volume,
+        #   that center could be blocked but maybe not all of the target area.
+        # It would be better to take the end pose of the previous edge as the start for the next edge,
+        #   as the global planner will have avoided a blockade if possible.
         entity = self.wm.get_entity(edge.origin.entity)
         if not entity:
             rospy.logwarn("No entity '{}'".format(edge.origin.entity))
@@ -85,9 +90,7 @@ class EdgeCostCalc(EdgeCostCalcBase):
             edge_cost = 100
 
         rospy.loginfo(
-            "Updating cost of edge {} - {} = {}".format(
-                edge.origin, edge.destination, edge_cost
-            ).replace("\n", ", ")
+            f"Updating cost of edge {edge.origin} - {edge.destination} = {edge_cost}".replace("\n", ", ")
         )
         return edge_cost
 
@@ -101,7 +104,7 @@ class TopoPlanner:
 
     def plan(self, graph: nx.Graph, origin_node: Tuple[str, str], dst_node: Tuple[str, str]) -> List[Edge]:
         lowest_total_cost = float("inf")
-        while True:
+        while not rospy.is_shutdown():
             path = nx.shortest_path(graph, origin_node, dst_node, weight="weight")
 
             edges = []
@@ -132,10 +135,8 @@ class TopoPlanner:
                 break  # The cost is not changing anymore, we hit the optimum, use this path
             elif current_total_cost < lowest_total_cost:
                 rospy.loginfo(
-                    "The current plan has cost {}, lowest is {}. "
-                    "Trying a to find a better plan with updated edge costs".format(
-                        current_total_cost, lowest_total_cost
-                    )
+                    f"The current plan has cost {current_total_cost}, lowest is {lowest_total_cost}. "
+                    "Trying a to find a better plan with updated edge costs"
                 )
                 lowest_total_cost = current_total_cost
         return edges

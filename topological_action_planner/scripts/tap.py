@@ -55,8 +55,6 @@ class TopoPlannerNode:
         self._srv_update_edge = rospy.Service("~update_edge", UpdateEdge, self._srv_update_edge_cb)
         self._pub_grasp_marker = rospy.Publisher("~graph", MarkerArray, queue_size=10, latch=True)
 
-        # self.G = generate_dummy_graph()
-        # to_yaml(self.G, '/tmp/graph.yaml')
         if self.plot:
             visualize(self.G)
         self._pub_grasp_marker.publish(create_tap_marker_array(self.G, self._wm))
@@ -72,9 +70,7 @@ class TopoPlannerNode:
 
         for node in graph.nodes.keys():
             node0_entity = self._wm.get_entity(node[0])
-            graph.nodes[node]["room"] = rooms_of_volume(
-                self._wm, node0_entity, node[1]
-            )  # Based on where they are in ED?
+            graph.nodes[node]["room"] = rooms_of_volume(self._wm, node0_entity, node[1])
 
         if req.origin.entity == "":
             # This indicates the plan starts from the robot's current pose
