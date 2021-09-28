@@ -7,7 +7,7 @@
 
     <!-- Start node -->
     <node name="topological_action_planner" pkg="topological_action_planner" type="tap.py" ns="$(arg namespace)" output="screen">
-        <rosparam param="edges" file="$(find topological_action_planner)/tests/example_graph.yaml" command="load" />
+        <rosparam param="edges" file="$(find topological_action_planner)/test/example_graph.yaml" command="load" />
     </node>
 
 </launch>
