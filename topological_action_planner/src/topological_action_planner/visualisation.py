@@ -77,7 +77,7 @@ def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray
         e_mark.pose.orientation.w = 1  # To squelch annoying messages about uninitialized quats
         origin_entity = wm.get_entity(origin[0])
         if not origin_entity:
-            rospy.logwarn("No such entity '{}'".format(origin[0]))
+            rospy.logwarn(f"No such entity '{origin[0]}'")
             continue
 
         if origin[1]:
@@ -92,7 +92,7 @@ def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray
 
         destination_entity = wm.get_entity(destination[0])
         if not destination_entity:
-            rospy.logwarn("No such entity '{}'".format(destination[0]))
+            rospy.logwarn(f"No such entity '{destination[0]}'")
             continue
 
         if destination[1]:
@@ -117,8 +117,8 @@ def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray
         reversed_arrow.points = list(reversed(reversed_arrow.points))
         marker_array.markers.append(reversed_arrow)
 
-        rospy.loginfo("Add edge {} -> {}".format(origin, destination))
-        rospy.loginfo("{} -> {}".format(origin_entity, destination_entity))
-        rospy.loginfo("{} -> {}".format(vec1, vec2))
+        rospy.loginfo(f"Add edge {origin} -> {destination}")
+        rospy.loginfo(f"{origin_entity} -> {destination_entity}")
+        rospy.loginfo(f"{vec1} -> {vec2}")
 
     return marker_array
