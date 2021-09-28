@@ -2,7 +2,7 @@ import math
 
 import rospy
 import networkx as nx
-from typing import List, Mapping
+from typing import List, Mapping, Optional
 
 from topological_action_planner_msgs.msg import Edge, Node
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
@@ -62,40 +62,9 @@ class TopoPlanner:
             # For the drive edges, query the maybe now updated cost of driving that with current knowledge
             for edge in edges:
                 if edge.action_type == Edge.ACTION_DRIVE:
-                    # TODO: we should actually plan from the end of the plan found for the previous edge.
-                    # Otherwise the center pose could be blocked but not e whole area and we would still fail.
-                    entity = self.wm.get_entity(edge.origin.entity)
-                    if not entity:
-                        rospy.logwarn("No entity '{}'".format(edge.origin.entity))
+                    edge_cost = self._update_edge_cost(edge)
+                    if edge_cost is None:
                         continue
-
-                    if edge.origin.area:
-                        src_vector = entity.volumes[edge.origin.area].center_point
-                        src = PoseStamped(
-                            header=Header(frame_id=entity.uuid),
-                            pose=Pose(
-                                position=Point(src_vector.x(), src_vector.y(), 0),
-                                orientation=Quaternion(0, 0, 0, 1),
-                            ),
-                        )
-                    else:  # In case we have eg. robot as the source
-                        src = tf2_ros.convert(entity.pose, PoseStamped)
-
-                    dst = self.get_area_constraint(edge.destination.entity, edge.destination.area)
-                    global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
-
-                    if global_plan_res.succes:
-                        edge_cost = compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
-                        # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
-                    else:
-                        # Cannot plan along this edge
-                        edge_cost = 100
-
-                    rospy.loginfo(
-                        "Updating cost of edge {} - {} = {}".format(edge.origin, edge.destination, edge_cost).replace(
-                            "\n", ", "
-                        )
-                    )
                     graph[(edge.origin.entity, edge.origin.area)][(edge.destination.entity, edge.destination.area)][
                         "weight"
                     ] = edge_cost
@@ -114,3 +83,44 @@ class TopoPlanner:
                 )
                 lowest_total_cost = current_total_cost
         return edges
+
+    def _update_edge_cost(self, edge: Edge) -> Optional[float]:
+        # TODO: we should actually plan from the end of the plan found for the previous edge.
+        # Otherwise the center pose could be blocked but not e whole area and we would still fail.
+        entity = self.wm.get_entity(edge.origin.entity)
+        if not entity:
+            rospy.logwarn("No entity '{}'".format(edge.origin.entity))
+            return None
+
+        if edge.origin.area:
+            src_vector = entity.volumes[edge.origin.area].center_point
+            src = PoseStamped(
+                header=Header(frame_id=entity.uuid),
+                pose=Pose(
+                    position=Point(src_vector.x(), src_vector.y(), 0),
+                    orientation=Quaternion(0, 0, 0, 1),
+                ),
+            )
+        else:  # In case we have eg. robot as the source
+            src = tf2_ros.convert(entity.pose, PoseStamped)
+
+        dst = self.get_area_constraint(edge.destination.entity, edge.destination.area)
+        global_plan_res = self._global_planner(
+            GetPlanRequest(start=src, goal_position_constraints=[dst])
+        )
+
+        if global_plan_res.succes:
+            edge_cost = (
+                    compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
+            )
+            # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
+        else:
+            # Cannot plan along this edge
+            edge_cost = 100
+
+        rospy.loginfo(
+            "Updating cost of edge {} - {} = {}".format(
+                edge.origin, edge.destination, edge_cost
+            ).replace("\n", ", ")
+        )
+        return edge_cost
