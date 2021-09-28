@@ -82,23 +82,19 @@ class TopoPlanner:
                         src = tf2_ros.convert(entity.pose, PoseStamped)
 
                     dst = self.get_area_constraint(edge.destination.entity, edge.destination.area)
-                    global_plan_res = self._global_planner(
-                        GetPlanRequest(start=src, goal_position_constraints=[dst])
-                    )
+                    global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
 
                     if global_plan_res.succes:
-                        edge_cost = (
-                                compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
-                        )
+                        edge_cost = compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
                         # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
                     else:
                         # Cannot plan along this edge
                         edge_cost = 100
 
                     rospy.loginfo(
-                        "Updating cost of edge {} - {} = {}".format(
-                            edge.origin, edge.destination, edge_cost
-                        ).replace("\n", ", ")
+                        "Updating cost of edge {} - {} = {}".format(edge.origin, edge.destination, edge_cost).replace(
+                            "\n", ", "
+                        )
                     )
                     graph[(edge.origin.entity, edge.origin.area)][(edge.destination.entity, edge.destination.area)][
                         "weight"
