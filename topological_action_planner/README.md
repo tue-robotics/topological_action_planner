@@ -10,7 +10,7 @@ Run (assuming the service is under the `hero` namespace):
 
 ```bash
 roslaunch topological_action_planner start.launch
-rosservice call /hero/topological_action_planner/get_plan  "origin:
+rosservice call /topological_action_planner/get_plan  "origin:
   entity: 'operator_table'
   area: 'in_front_of'
 destination:
@@ -18,6 +18,7 @@ destination:
   area: 'in_front_of'"
 ```
 
+(Note that on the TechUnited robots like HERO, the services are namespaced to the robot name, so eg. `/hero/topological_action_planner/get_plan`)
 or
 
 ```bash
