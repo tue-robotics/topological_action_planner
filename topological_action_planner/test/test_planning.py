@@ -1,5 +1,4 @@
 import unittest
-import mock
 from topological_action_planner.planning import TopoPlanner, EdgeCostCalcBase
 
 import networkx as nx
