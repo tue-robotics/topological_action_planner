@@ -21,7 +21,5 @@ catkin_install_python(PROGRAMS
 )
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
   catkin_add_nosetests(test)
 endif()
-
