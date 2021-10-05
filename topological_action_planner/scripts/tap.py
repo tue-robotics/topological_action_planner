@@ -105,16 +105,16 @@ class TopoPlannerNode:
             self._pub_grasp_marker.publish(create_tap_marker_array(graph, self._wm))
             rospy.loginfo("Found plan of {} edges".format(len(edges)))
             return PlanResponse(error_msg="", error_code=PlanResponse.SUCCESS, edges=edges)
-        except nx.NetworkXNoPath as no_path_found_ex:
-            rospy.logerr(no_path_found_ex)
+        except nx.NetworkXNoPath as ex:
+            rospy.logerr(ex)
             return PlanResponse(
-                error_msg=str(no_path_found_ex),
+                error_msg=str(ex),
                 error_code=PlanResponse.ERROR_NO_PATH_FOUND,
             )
-        except nx.NodeNotFound as node_not_found_ex:
-            rospy.logerr(node_not_found_ex)
+        except nx.NodeNotFound as ex:
+            rospy.logerr(ex)
             return PlanResponse(
-                error_msg=str(node_not_found_ex),
+                error_msg=str(ex),
                 error_code=PlanResponse.ERROR_UNKNOWN_NODE,
             )
 
@@ -122,8 +122,8 @@ class TopoPlannerNode:
         try:
             self.update_edge(req.updated)
             return UpdateEdgeResponse(success=True)
-        except nx.NodeNotFound as node_not_found_ex:
-            rospy.logerr(node_not_found_ex)
+        except nx.NodeNotFound as ex:
+            rospy.logerr(ex)
             return UpdateEdgeResponse(success=False)
 
     def update_edge(self, edge: Edge):
