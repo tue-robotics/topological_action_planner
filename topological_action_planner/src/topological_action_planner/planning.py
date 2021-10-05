@@ -119,9 +119,9 @@ class TopoPlanner:
                     edge_cost = self._edge_cost_calc(edge)
                     if edge_cost is None:
                         continue
-                    graph[(edge.origin.entity, edge.origin.area)][(edge.destination.entity, edge.destination.area)][
-                        "weight"
-                    ] = edge_cost
+
+                    orig, dst = (edge.origin.entity, edge.origin.area), (edge.destination.entity, edge.destination.area)
+                    graph[orig][dst]["weight"] = edge_cost
                     edge.cost = edge_cost
 
             current_total_cost = sum([edge.cost for edge in edges])
