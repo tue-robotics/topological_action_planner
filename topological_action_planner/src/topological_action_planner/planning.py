@@ -35,6 +35,7 @@ class EdgeCostCalcBase:
 
 class EdgeCostCalc(EdgeCostCalcBase):
     """The EdgeCostCalc calculates a cost for an Edge"""
+
     def __init__(self, wm: WM, default_action_costs: Mapping[str, int]):
         self.wm = wm
         self._action_costs = default_action_costs
@@ -76,22 +77,16 @@ class EdgeCostCalc(EdgeCostCalcBase):
             src = tf2_ros.convert(entity.pose, PoseStamped)
 
         dst = self._get_area_constraint(edge.destination.entity, edge.destination.area)
-        global_plan_res = self._global_planner(
-            GetPlanRequest(start=src, goal_position_constraints=[dst])
-        )
+        global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
 
         if global_plan_res.succes:
-            edge_cost = (
-                    compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
-            )
+            edge_cost = compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
             # edge_cost = 100 * 0.1 * self._action_costs[Edge.ACTION_DRIVE]
         else:
             # Cannot plan along this edge
             edge_cost = 100
 
-        rospy.loginfo(
-            f"Updating cost of edge {edge.origin} - {edge.destination} = {edge_cost}".replace("\n", ", ")
-        )
+        rospy.loginfo(f"Updating cost of edge {edge.origin} - {edge.destination} = {edge_cost}".replace("\n", ", "))
         return edge_cost
 
 
@@ -140,4 +135,3 @@ class TopoPlanner:
                 )
                 lowest_total_cost = current_total_cost
         return edges
-
