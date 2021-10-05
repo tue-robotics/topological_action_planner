@@ -9,25 +9,27 @@ from topological_action_planner_msgs.msg import Edge, Node
 
 class TopoPlannerTest(unittest.TestCase):
 
-    def test_3_node_planning_same_edge_cost(self):
-        class SameEdgeCosts(EdgeCostCalcBase):
-            def __call__(self, edge: Edge) -> Optional[float]:
-                return edge.cost
-        topoplanner = TopoPlanner(SameEdgeCosts())
-
-        graph = nx.Graph()
-        graph.add_edge(("a", "1"), ("b", "2"), weight=5, action_type=Edge.ACTION_DRIVE)
-        graph.add_edge(("b", "2"), ("c", "3"), weight=5, action_type=Edge.ACTION_DRIVE)
-        graph.add_edge(
+    def setUp(self) -> None:
+        self.graph = nx.Graph()
+        self.graph.add_edge(("a", "1"), ("b", "2"), weight=5, action_type=Edge.ACTION_DRIVE)
+        self.graph.add_edge(("b", "2"), ("c", "3"), weight=5, action_type=Edge.ACTION_DRIVE)
+        self.graph.add_edge(
             ("a", "1"),
             ("c", "3"),  # This is the shortest path, directly from a1 to c3
             weight=5,
             action_type=Edge.ACTION_DRIVE,
         )
 
-        a1 = ("a", "1")
-        c3 = ("c", "3")
-        expected_edges = topoplanner.plan(graph, a1, c3)
+        self.a1 = ("a", "1")
+        self.c3 = ("c", "3")
+
+    def test_3_node_planning_same_edge_cost(self) -> None:
+        class SameEdgeCosts(EdgeCostCalcBase):
+            def __call__(self, edge: Edge) -> Optional[float]:
+                return edge.cost
+        topoplanner = TopoPlanner(SameEdgeCosts())
+
+        expected_edges = topoplanner.plan(self.graph, self.a1, self.c3)
 
         self.assertEqual(len(expected_edges), 1, "Shortest path is 1 edge only")
         self.assertEqual(
@@ -36,7 +38,7 @@ class TopoPlannerTest(unittest.TestCase):
             "Shortest path is from a1 to c3 directly",
         )
 
-    def test_3_node_planning_different_edge_cost(self):
+    def test_3_node_planning_different_edge_cost(self) -> None:
         """
         When planning, the edge weights are recalculated using PredefinedEdgeCosts, increasing the cost of the best plan
 
@@ -55,20 +57,7 @@ class TopoPlannerTest(unittest.TestCase):
                                   (edge.destination.entity, edge.destination.area))]
         topoplanner = TopoPlanner(PredefinedEdgeCosts())
 
-        graph = nx.Graph()
-        graph.add_edge(("a", "1"), ("b", "2"), weight=5, action_type=Edge.ACTION_DRIVE)
-        graph.add_edge(("b", "2"), ("c", "3"), weight=5, action_type=Edge.ACTION_DRIVE)
-        graph.add_edge(
-            ("a", "1"),
-            ("c", "3"),  # This is the shortest path, directly from a1 to c3
-            weight=5,
-            action_type=Edge.ACTION_DRIVE,
-        )
-
-        a1 = ("a", "1")
-        c3 = ("c", "3")
-        
-        expected_edges = topoplanner.plan(graph, a1, c3)
+        expected_edges = topoplanner.plan(self.graph, self.a1, self.c3)
 
         self.assertEqual(
             expected_edges,
