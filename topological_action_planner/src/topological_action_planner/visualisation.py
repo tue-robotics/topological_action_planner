@@ -81,14 +81,15 @@ def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray
             continue
 
         if origin[1]:
-            vec1 = wm.tf_buffer.transform(
+            goal = (
                 VectorStamped(
                     origin_entity.volumes[origin[1]].center_point, frame_id=origin_entity.uuid, stamp=rospy.Time(0)
                 ),
-                "map",
             )
+            vec1 = wm.tf_buffer.transform(goal, "map")
         else:
-            vec1 = VectorStamped.from_framestamped(wm.tf_buffer.transform(origin_entity.pose, "map"))
+            origin_wrt_map = wm.tf_buffer.transform(origin_entity.pose, "map")
+            vec1 = VectorStamped.from_framestamped(origin_wrt_map)
 
         destination_entity = wm.get_entity(destination[0])
         if not destination_entity:
@@ -96,14 +97,12 @@ def create_tap_marker_array(graph: nx.Graph, wm: WM, frame="map") -> MarkerArray
             continue
 
         if destination[1]:
-            vec2 = wm.tf_buffer.transform(
-                VectorStamped(
-                    destination_entity.volumes[destination[1]].center_point,
-                    frame_id=destination_entity.uuid,
-                    stamp=rospy.Time(0),
-                ),
-                "map",
+            dest = VectorStamped(
+                destination_entity.volumes[destination[1]].center_point,
+                frame_id=destination_entity.uuid,
+                stamp=rospy.Time(0),
             )
+            vec2 = wm.tf_buffer.transform(dest, "map")
         else:
             vec2 = VectorStamped.from_framestamped(wm.tf_buffer.transform(destination_entity.pose, "map"))
         e_mark.points = [
