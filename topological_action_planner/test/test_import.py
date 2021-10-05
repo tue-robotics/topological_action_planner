@@ -9,5 +9,5 @@ class TestImport(unittest.TestCase):
         import topological_action_planner
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
