@@ -77,7 +77,9 @@ class EdgeCostCalc(EdgeCostCalcBase):
             src = tf2_ros.convert(entity.pose, PoseStamped)
 
         dst = self._get_area_constraint(edge.destination.entity, edge.destination.area)
-        global_plan_res = self._global_planner(GetPlanRequest(start=src, goal_position_constraints=[dst]))
+        global_plan_res = self._global_planner(
+            GetPlanRequest(start=src, goal_position_constraints=[dst])
+        )  # type: GetPlanResponse
 
         if global_plan_res.succes:
             edge_cost = compute_path_length(global_plan_res.plan) * self._action_costs[Edge.ACTION_DRIVE]
