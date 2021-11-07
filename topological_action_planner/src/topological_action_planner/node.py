@@ -7,8 +7,8 @@ from topological_action_planner_msgs.srv import Plan, PlanRequest, PlanResponse
 from topological_action_planner_msgs.srv import UpdateEdge, UpdateEdgeRequest, UpdateEdgeResponse
 from visualization_msgs.msg import MarkerArray
 
-from ed_py.utility import rooms_of_volume, rooms_of_entity
-from ed_py.world_model import WM
+from ed.utility import rooms_of_volume, rooms_of_entity
+from ed.world_model import WM
 from topological_action_planner.serialisation import from_dicts
 from topological_action_planner.planning import TopoPlanner, EdgeCostCalc
 from topological_action_planner.util import visualize

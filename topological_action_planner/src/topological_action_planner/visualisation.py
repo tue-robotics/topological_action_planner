@@ -2,7 +2,7 @@ import copy
 
 import rospy
 from visualization_msgs.msg import MarkerArray, Marker
-from ed_py.world_model import WM
+from ed.world_model import WM
 from geometry_msgs.msg import Point, Pose, Vector3, Quaternion, PoseStamped
 import networkx as nx
 from pykdl_ros import VectorStamped

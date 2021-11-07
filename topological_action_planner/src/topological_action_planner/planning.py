@@ -9,7 +9,7 @@ from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header
 import tf2_ros
 
-from ed_py.world_model import WM
+from ed.world_model import WM
 from cb_base_navigation_msgs.srv import GetPlan, GetPlanRequest, GetPlanResponse
 from ed_navigation_msgs.srv import GetGoalConstraint
 from cb_base_navigation_msgs.msg import PositionConstraint
