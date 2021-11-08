@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>topological_action_planner</name>
+  <version>0.0.1</version>
+  <description>Plannng over a topological navigation mesh. Nodes are areas of interest in an ED world model and edges between these areas are labeled with the action to take to traverse the edge, like opening a door or plain driving. </description>
+
+  <maintainer email="loy.vanbeek@gmail.com">Loy van Beek</maintainer>
+  <author email="loy.vanbeek@gmail.com">Loy van Beek</author>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>cb_base_navigation_msgs</exec_depend>
+  <exec_depend>ed_gui_server_msgs</exec_depend>
+  <exec_depend>ed_msgs</exec_depend>
+  <exec_depend>ed_navigation_msgs</exec_depend>
+  <exec_depend>ed_python</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>genpy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-matplotlib</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-matplotlib</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-networkx</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-networkx</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>topological_action_planner_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
+
+  <doc_depend>python3-sphinx</doc_depend>
+  <doc_depend>python-sphinx-autoapi-pip</doc_depend>
+  <doc_depend>python-sphinx-rtd-theme-pip</doc_depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
+
+</package>

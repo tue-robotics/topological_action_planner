@@ -1,0 +1,3 @@
+[submodule "topological_action_planner/docs"]
+	path = topological_action_planner/docs
+	url = https://github.com/tue-robotics/tue_documentation_python.git
