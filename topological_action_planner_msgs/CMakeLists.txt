@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(topological_action_planner_msgs)
 
 find_package(catkin REQUIRED
